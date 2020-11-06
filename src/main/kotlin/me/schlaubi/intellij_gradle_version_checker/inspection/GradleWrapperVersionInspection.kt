@@ -35,7 +35,8 @@ import me.schlaubi.intellij_gradle_version_checker.*
 
 class GradleWrapperVersionInspection : LocalInspectionTool() {
 
-    override fun getStaticDescription(): String? = GradleUpdaterBundle.getMessage("inspection.outdated_version.static_description")
+    override fun getStaticDescription(): String? =
+        GradleUpdaterBundle.getMessage("inspection.outdated_version.static_description")
 
     override fun buildVisitor(
         holder: ProblemsHolder,
@@ -59,30 +60,33 @@ class GradleWrapperVersionInspection : LocalInspectionTool() {
                 val version = fileName.substringAfter("gradle-").substringBefore(".zip")
                 val (versionName, _ /* type */) = version.split("-")
                 val gradleVersion = versionName.parseGradleVersion() ?: return
-                    val comparison = latestGradleVersion.gradleVersion.compareTo(gradleVersion)
-                    if (comparison != 0) {
-                        holder.registerProblem(
-                            element,
-                            GradleUpdaterBundle.getMessage("inspection.outdated_version.description", latestGradleVersion.gradleVersion),
-                            when(comparison) {
-                                GradleVersion.MAJOR -> ProblemHighlightType.LIKE_DEPRECATED
-                                GradleVersion.MINOR -> ProblemHighlightType.WARNING
-                                GradleVersion.REVISION -> ProblemHighlightType.WEAK_WARNING
-                                GradleVersion.TOO_NEW -> ProblemHighlightType.ERROR
-                                else -> error("Invalid severity: $comparison")
-                            },
-                            UpgradeGradleVersionQuickFix(latestGradleVersion.gradleVersion.toString(), versionName),
-                            UpgradeGradleVersionAndSyncQuickFix(
-                                latestGradleVersion.gradleVersion.toString(),
-                                versionName
-                            )
+                val comparison = latestGradleVersion.gradleVersion.compareTo(gradleVersion)
+                if (comparison != 0) {
+                    holder.registerProblem(
+                        element,
+                        GradleUpdaterBundle.getMessage(
+                            "inspection.outdated_version.description",
+                            latestGradleVersion.gradleVersion
+                        ),
+                        when (comparison) {
+                            GradleVersion.MAJOR -> ProblemHighlightType.LIKE_DEPRECATED
+                            GradleVersion.MINOR -> ProblemHighlightType.WARNING
+                            GradleVersion.REVISION -> ProblemHighlightType.WEAK_WARNING
+                            GradleVersion.TOO_NEW -> ProblemHighlightType.ERROR
+                            else -> error("Invalid severity: $comparison")
+                        },
+                        UpgradeGradleVersionQuickFix(latestGradleVersion.gradleVersion.toString(), versionName),
+                        UpgradeGradleVersionAndSyncQuickFix(
+                            latestGradleVersion.gradleVersion.toString(),
+                            versionName
                         )
-                    }
+                    )
+                }
             }
         }
     }
 
     companion object {
-        private const val WRAPPER_VERSION_PROPERTY = "distributionUrl"
+        const val WRAPPER_VERSION_PROPERTY = "distributionUrl"
     }
 }

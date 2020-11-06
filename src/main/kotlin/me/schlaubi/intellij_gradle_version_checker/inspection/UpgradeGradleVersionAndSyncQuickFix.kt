@@ -37,7 +37,6 @@ class UpgradeGradleVersionAndSyncQuickFix(latestGradleVersion: String, currentGr
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
         super.applyFix(project, descriptor)
 
-        val projectTracker = ExternalSystemProjectTracker.getInstance(project)
-        projectTracker.scheduleProjectRefresh()
+        ExternalSystemProjectTracker.getInstance(project).scheduleProjectRefresh()
     }
 }

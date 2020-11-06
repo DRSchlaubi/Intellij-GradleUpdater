@@ -63,10 +63,10 @@ data class GradleVersion(val major: Int, val minor: Int, val revision: Int?) : C
     }
 
     companion object {
-        const val REVISION = -1
-        const val MINOR = -2
-        const val MAJOR = -3
-        const val TOO_NEW = 1
+        const val REVISION = 1
+        const val MINOR = 2
+        const val MAJOR = 3
+        const val TOO_NEW = 4
     }
 
     override fun toString(): String = "$major.$minor${if (revision != null) ".$revision" else ""}"

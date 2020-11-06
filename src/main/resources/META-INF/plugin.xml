@@ -31,20 +31,48 @@
     A plugin that automatically updates your Gradle version for you
     ]]></description>
 
-    <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
-         on how to target different products -->
+    <version>1.0.1</version>
+
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lang</depends>
     <depends>com.intellij.properties</depends>
+    <depends>com.intellij.gradle</depends>
+
+    <resource-bundle>messages.GradleUpdater</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
-        <postStartupActivity implementation="me.schlaubi.intellij_gradle_version_checker.GradleVersionResolvingActivity"/>
+        <applicationService
+                serviceImplementation="me.schlaubi.intellij_gradle_version_checker.settings.ApplicationPersistentGradleVersionSettings"/>
+        <projectService
+                serviceImplementation="me.schlaubi.intellij_gradle_version_checker.settings.ProjectPersistentGradleVersionSettings"/>
+
+        <applicationConfigurable parentId="tools"
+                                 instance="me.schlaubi.intellij_gradle_version_checker.settings.GradleVersionApplicationSettingsConfigurable"
+                                 id="me.schlaubi.intellij_gradle_version_checker.settings.GradleVersionApplicationSettingsConfigurable"
+                                 displayName="Gradle Updater Settings"/>
+        <applicationConfigurable
+                parentId="me.schlaubi.intellij_gradle_version_checker.settings.GradleVersionApplicationSettingsConfigurable"
+                instance="me.schlaubi.intellij_gradle_version_checker.settings.ApplicationGradleVersionSettingsConfigurable"
+                id="me.schlaubi.intellij_gradle_version_checker.settings.ApplicationGradleVersionSettingsConfigurable"
+                displayName="Application Settings"/>
+        <projectConfigurable
+                parentId="me.schlaubi.intellij_gradle_version_checker.settings.GradleVersionApplicationSettingsConfigurable"
+                instance="me.schlaubi.intellij_gradle_version_checker.settings.ProjectGradleVersionSettingsConfigurable"
+                id="me.schlaubi.intellij_gradle_version_checker.settings.ProjectGradleVersionSettingsConfigurable"
+                displayName="Project Settings"/>
+
+        <postStartupActivity implementation="me.schlaubi.intellij_gradle_version_checker.GradleVersionResolvingActivity"
+                             id="me.schlaubi.intellij_gradle_version_checker.GradleVersionResolvingActivity"/>
+        <postStartupActivity
+                implementation="me.schlaubi.intellij_gradle_version_checker.ProjectGradleVersionCheckingActivity"
+                order="after me.schlaubi.intellij_gradle_version_checker.GradleVersionResolvingActivity"/>
+
         <localInspection
                 language="Properties"
                 enabledByDefault="true"
                 shortName="OutdatedGradleVersion"
                 displayName="Outdated Gradle version"
-                groupName="Gradle version inspections"
+                groupKey="inspection.group.name"
                 hasStaticDescription="true"
                 implementationClass="me.schlaubi.intellij_gradle_version_checker.inspection.GradleWrapperVersionInspection"
         />

@@ -61,5 +61,8 @@ intellij {
     )
 }
 tasks.getByName<org.jetbrains.intellij.tasks.PatchPluginXmlTask>("patchPluginXml") {
-    changeNotes("""Initial Release""")
+    changeNotes("""
+        - Code clean up
+        - Fix spelling mistakes
+    """.trimIndent())
 }

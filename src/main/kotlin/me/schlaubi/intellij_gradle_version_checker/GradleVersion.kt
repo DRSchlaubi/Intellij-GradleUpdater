@@ -114,8 +114,7 @@ internal class GradleVersionSerializer : KSerializer<GradleVersion> {
 
 fun String.parseGradleVersion(): GradleVersion? {
     val match = gradleVersionPattern.matchEntire(this) ?: return null
-    val (_, major, minor) = match.groupValues
-    val revision = match.groupValues[3]
+    val (_, major, minor, revision) = match.groupValues
 
     return GradleVersion(major.toInt(), minor.toInt(), if(revision.isBlank()) null else revision.toInt())
 }

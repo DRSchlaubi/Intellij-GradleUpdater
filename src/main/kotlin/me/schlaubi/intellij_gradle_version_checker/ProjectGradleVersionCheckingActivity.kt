@@ -31,6 +31,10 @@ import me.schlaubi.intellij_gradle_version_checker.settings.ProjectPersistentGra
 import org.jetbrains.plugins.gradle.settings.GradleSettings
 import org.gradle.util.GradleVersion as GGradleVersion
 
+/**
+ * [ShelvedChangesViewManager.PostStartupActivity] checking the Gradle version of the currently opened project
+ * if not disabled in settings and notifies the users to update it's Gradle version.
+ */
 class ProjectGradleVersionCheckingActivity : ShelvedChangesViewManager.PostStartupActivity() {
 
     override fun runActivity(project: Project) {

@@ -29,6 +29,9 @@ import com.intellij.openapi.externalSystem.autoimport.ExternalSystemProjectTrack
 import com.intellij.openapi.project.Project
 import me.schlaubi.intellij_gradle_version_checker.GradleUpdaterBundle
 
+/**
+ * Extension of [UpgradeGradleVersionQuickFix] which also calls [ExternalSystemProjectTracker.scheduleProjectRefresh].
+ */
 class UpgradeGradleVersionAndSyncQuickFix(latestGradleVersion: String, currentGradleVersion: String) :
     UpgradeGradleVersionQuickFix(latestGradleVersion, currentGradleVersion) {
     override fun getFamilyName(): String = GradleUpdaterBundle.getMessage("quickfix.update_gradle_and_sync.family_name")

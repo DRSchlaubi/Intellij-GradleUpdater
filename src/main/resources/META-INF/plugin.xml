@@ -31,8 +31,6 @@
     A plugin that automatically updates your Gradle version for you
     ]]></description>
 
-    <version>1.0.1</version>
-
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lang</depends>
     <depends>com.intellij.properties</depends>
@@ -46,17 +44,15 @@
         <projectService
                 serviceImplementation="me.schlaubi.intellij_gradle_version_checker.settings.ProjectPersistentGradleVersionSettings"/>
 
-        <applicationConfigurable parentId="tools"
-                                 instance="me.schlaubi.intellij_gradle_version_checker.settings.GradleVersionApplicationSettingsConfigurable"
-                                 id="me.schlaubi.intellij_gradle_version_checker.settings.GradleVersionApplicationSettingsConfigurable"
-                                 displayName="Gradle Updater Settings"/>
+        <groupConfigurable parentId="tools" descriptionKey="configurables.group.description" displayNameKey="configurables.group.display_name"
+                           id="me.schlaubi.intellij_gradle_version_checker.settings"/>
         <applicationConfigurable
-                parentId="me.schlaubi.intellij_gradle_version_checker.settings.GradleVersionApplicationSettingsConfigurable"
+                parentId="me.schlaubi.intellij_gradle_version_checker.settings"
                 instance="me.schlaubi.intellij_gradle_version_checker.settings.ApplicationGradleVersionSettingsConfigurable"
                 id="me.schlaubi.intellij_gradle_version_checker.settings.ApplicationGradleVersionSettingsConfigurable"
                 displayName="Application Settings"/>
         <projectConfigurable
-                parentId="me.schlaubi.intellij_gradle_version_checker.settings.GradleVersionApplicationSettingsConfigurable"
+                parentId="me.schlaubi.intellij_gradle_version_checker.settings"
                 instance="me.schlaubi.intellij_gradle_version_checker.settings.ProjectGradleVersionSettingsConfigurable"
                 id="me.schlaubi.intellij_gradle_version_checker.settings.ProjectGradleVersionSettingsConfigurable"
                 displayName="Project Settings"/>
@@ -76,5 +72,7 @@
                 hasStaticDescription="true"
                 implementationClass="me.schlaubi.intellij_gradle_version_checker.inspection.GradleWrapperVersionInspection"
         />
+
+        <notificationGroup displayType="BALLOON" id="me.schlaubi.intellij_gradle_version_checker.notifications.OutdatedVersion" key="notification.group.title"/>
     </extensions>
 </idea-plugin>

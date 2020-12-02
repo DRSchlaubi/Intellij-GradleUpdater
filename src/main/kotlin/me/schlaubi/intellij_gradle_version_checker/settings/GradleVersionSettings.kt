@@ -31,7 +31,15 @@ import com.intellij.openapi.components.Storage
 import com.intellij.openapi.project.Project
 import com.intellij.util.xmlb.XmlSerializerUtil
 
-sealed class AbstractPersistentGradleVersionSettings<T : GradleVersionSettings> : GradleVersionSettings, PersistentStateComponent<T> {
+/**
+ * Base class for persistent [GradleVersionSettings].
+ *
+ * @param T the type of the implementation
+ * @see GradleVersionSettings
+ * @see PersistentStateComponent
+ */
+sealed class AbstractPersistentGradleVersionSettings<T : GradleVersionSettings> : GradleVersionSettings,
+    PersistentStateComponent<T> {
 
     override var ignoreOutdatedVersion = false
 
@@ -46,26 +54,39 @@ sealed class AbstractPersistentGradleVersionSettings<T : GradleVersionSettings> 
 
 }
 
+/**
+ * Application wide implementation of [AbstractPersistentGradleVersionSettings].
+ */
 @State(
     name = "me.schlaubi.intellij_gradle_version_checker.settings.ApplicationPersistentGradleVersionSettings",
     storages = [Storage("GradleUpdaterPlugin.xml")]
 )
-class ApplicationPersistentGradleVersionSettings : AbstractPersistentGradleVersionSettings<ApplicationPersistentGradleVersionSettings>() {
+class ApplicationPersistentGradleVersionSettings :
+    AbstractPersistentGradleVersionSettings<ApplicationPersistentGradleVersionSettings>() {
     companion object {
-        fun getInstance(): GradleVersionSettings = ServiceManager.getService(ApplicationPersistentGradleVersionSettings::class.java)
+        fun getInstance(): GradleVersionSettings =
+            ServiceManager.getService(ApplicationPersistentGradleVersionSettings::class.java)
     }
 }
 
+/**
+ * Project wide implementation of [AbstractPersistentGradleVersionSettings].
+ */
 @State(
     name = "me.schlaubi.intellij_gradle_version_checker.settings.ProjectPersistentGradleVersionSettings",
     storages = [Storage("GradleUpdaterPlugin.xml")]
 )
-class ProjectPersistentGradleVersionSettings : AbstractPersistentGradleVersionSettings<ProjectPersistentGradleVersionSettings>() {
+class ProjectPersistentGradleVersionSettings :
+    AbstractPersistentGradleVersionSettings<ProjectPersistentGradleVersionSettings>() {
     companion object {
-        fun getInstance(project: Project): GradleVersionSettings = ServiceManager.getService(project, ProjectPersistentGradleVersionSettings::class.java)
+        fun getInstance(project: Project): GradleVersionSettings =
+            ServiceManager.getService(project, ProjectPersistentGradleVersionSettings::class.java)
     }
 }
 
+/**
+ * Non persistent implementation of [GradleVersionSettings].
+ */
 data class MemoryGradleVersionSettings(override var ignoreOutdatedVersion: Boolean = false) : GradleVersionSettings {
     constructor(settings: GradleVersionSettings) : this(settings.ignoreOutdatedVersion)
 
@@ -73,10 +94,25 @@ data class MemoryGradleVersionSettings(override var ignoreOutdatedVersion: Boole
 
 }
 
-object ApplicationGradleVersionSettings : GradleVersionSettings by ApplicationPersistentGradleVersionSettings.getInstance()
+/**
+ * Object delegating to [ApplicationPersistentGradleVersionSettings.getInstance].
+ */
+object ApplicationGradleVersionSettings :
+    GradleVersionSettings by ApplicationPersistentGradleVersionSettings.getInstance()
 
+/**
+ * Interface for plugin settings.
+ */
 interface GradleVersionSettings {
+    /**
+     * Whether version notification should be enabled or not.
+     */
     var ignoreOutdatedVersion: Boolean
 
+    /**
+     * Creates a non-persistent copy of this instance.
+     *
+     * @see MemoryGradleVersionSettings
+     */
     fun asMemoryCopy(): GradleVersionSettings
 }

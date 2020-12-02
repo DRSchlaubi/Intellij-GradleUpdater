@@ -24,14 +24,12 @@
 
 package me.schlaubi.intellij_gradle_version_checker
 
-import com.intellij.notification.NotificationDisplayType
-import com.intellij.notification.NotificationGroup
+import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.guessProjectDir
-import com.intellij.openapi.util.Key
 import me.schlaubi.intellij_gradle_version_checker.inspection.GradleWrapperVersionInspection
 import me.schlaubi.intellij_gradle_version_checker.settings.ApplicationGradleVersionSettings
 import me.schlaubi.intellij_gradle_version_checker.settings.ProjectPersistentGradleVersionSettings
@@ -42,15 +40,24 @@ import java.nio.channels.FileChannel
 import java.nio.file.StandardOpenOption
 import java.util.*
 
-
+/**
+ * Utility class to invoke Plugin notifications.
+ */
 object GradleVersionNotifier {
 
-    private val group = NotificationGroup("Gradle Update Notification", NotificationDisplayType.BALLOON)
 
+    /**
+     * Sends a notification to [project] telling the user to update the project's Gradle version.
+     */
     fun notifyOutdated(project: Project) {
+        val group = NotificationGroupManager.getInstance()
+            .getNotificationGroup("me.schlaubi.intellij_gradle_version_checker.notifications.OutdatedVersion")
         val notification = group.createNotification(
             GradleUpdaterBundle.getMessage("notification.outdated_version.title"),
-            GradleUpdaterBundle.getMessage("notification.outdated_version.description", latestGradleVersion.gradleVersion.toString()),
+            GradleUpdaterBundle.getMessage(
+                "notification.outdated_version.description",
+                latestGradleVersion.gradleVersion.toString()
+            ),
             NotificationType.WARNING
         )
         notification.addAction(IgnoreForThisProjectAction())
@@ -61,7 +68,20 @@ object GradleVersionNotifier {
     }
 }
 
-class UpdateGradleVersionAction : AnAction(GradleUpdaterBundle.getMessage("notification.outdated_version.actions.update", latestGradleVersion.gradleVersion.toString())) {
+/**
+ * [AnAction] on outdated Gradle version notification to Update the Gradle version.
+ */
+class UpdateGradleVersionAction : AnAction(
+    GradleUpdaterBundle.getMessage(
+        "notification.outdated_version.actions.update.title",
+        latestGradleVersion.gradleVersion.toString()
+    ),
+    GradleUpdaterBundle.getMessage(
+        "notification.outdated_version.actions.update.description",
+        latestGradleVersion.gradleVersion.toString()
+    ),
+    null
+) {
     override fun actionPerformed(e: AnActionEvent) {
         val gradlePropertiesFile = e.project!!.guessProjectDir()?.findChild("gradle")?.findChild("wrapper")
             ?.findChild("gradle-wrapper.properties") ?: return
@@ -71,10 +91,7 @@ class UpdateGradleVersionAction : AnAction(GradleUpdaterBundle.getMessage("notif
         }
 
         val value = gradleProperties[GradleWrapperVersionInspection.WRAPPER_VERSION_PROPERTY] as? String ?: return
-        val fileName = value.substringAfterLast('/') // /gradle-6.3-bin.zip
-        val version = fileName.substringAfter("gradle-").substringBefore(".zip")
-        val (versionName, _ /* type */) = version.split("-")
-        val gradleVersion = versionName.parseGradleVersion() ?: return
+        val gradleVersion = extractVersionFromDistributionUrlProperty(value) ?: return
         val newGradleVersion = value.replace(gradleVersion.toString(), latestGradleVersion.gradleVersion.toString())
         gradleProperties[GradleWrapperVersionInspection.WRAPPER_VERSION_PROPERTY] = newGradleVersion
 
@@ -89,14 +106,29 @@ class UpdateGradleVersionAction : AnAction(GradleUpdaterBundle.getMessage("notif
     }
 }
 
-class IgnoreForThisProjectAction : AnAction(GradleUpdaterBundle.getMessage("notification.outdated_version.actions.ignore_project")) {
+/**
+ * [AnAction] on outdated Gradle version notification to mute this notification for this project.
+ */
+class IgnoreForThisProjectAction : AnAction(
+    GradleUpdaterBundle.getMessage("notification.outdated_version.actions.ignore_project.title"),
+    GradleUpdaterBundle.getMessage("notification.outdated_version.actions.ignore_project.description"),
+    null
+) {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
         ProjectPersistentGradleVersionSettings.getInstance(project).ignoreOutdatedVersion = true
     }
 }
 
-class IgnoreAction : AnAction(GradleUpdaterBundle.getMessage("notification.outdated_version.actions.ignore_application")) {
+/**
+ * [AnAction] on outdated Gradle version notification to mute this notification completely.
+ */
+class IgnoreAction :
+    AnAction(
+        GradleUpdaterBundle.getMessage("notification.outdated_version.actions.ignore_application.title"),
+        GradleUpdaterBundle.getMessage("notification.outdated_version.actions.ignore_application.description"),
+        null
+    ) {
     override fun actionPerformed(e: AnActionEvent) {
         ApplicationGradleVersionSettings.ignoreOutdatedVersion = true
     }

@@ -37,27 +37,41 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
+/**
+ * The latest Gradle version.
+ *
+ * @see GradleVersionResolvingActivity
+ */
 lateinit var latestGradleVersion: GithubGradleVersion
-        private set
+    private set
+
 // https://regex101.com/r/oVpaYd/1/
 private val gradleVersionPattern = """((?:[0-9])+)\.((?:[0-9])+)(?:\.((?:[0-9])+))?""".toRegex()
 private const val latestGradleVersionEndpoint = "https://api.github.com/repos/gradle/gradle/releases/latest"
 private val httpClient = HttpClient {
     install(JsonFeature) {
-        val json  = kotlinx.serialization.json.Json {
+        val json = kotlinx.serialization.json.Json {
             ignoreUnknownKeys = true
         }
         serializer = KotlinxSerializer(json)
     }
 }
 
+/**
+ * Representation of Gradle version
+ *
+ * @property major the major version code
+ * @property minor the minor version code
+ * @property revision the revision version code
+ * @see Comparable
+ */
 @Serializable(with = GradleVersionSerializer::class)
 data class GradleVersion(val major: Int, val minor: Int, val revision: Int?) : Comparable<GradleVersion> {
     override fun compareTo(other: GradleVersion): Int {
         return when {
-            major != other.major -> if(other.major < major) MAJOR else TOO_NEW
-            minor != other.minor -> if(other.minor < minor) MINOR else TOO_NEW
-            revision != other.revision -> if((revision ?: 0) > (other.revision ?: 0)) REVISION else TOO_NEW
+            major != other.major -> if (other.major < major) MAJOR else TOO_NEW
+            minor != other.minor -> if (other.minor < minor) MINOR else TOO_NEW
+            revision != other.revision -> if ((revision ?: 0) > (other.revision ?: 0)) REVISION else TOO_NEW
             else -> 0
         }
     }
@@ -72,10 +86,13 @@ data class GradleVersion(val major: Int, val minor: Int, val revision: Int?) : C
     override fun toString(): String = "$major.$minor${if (revision != null) ".$revision" else ""}"
 }
 
-suspend fun fetchGradleVersion() {
+internal suspend fun fetchGradleVersion() {
     latestGradleVersion = httpClient.get(latestGradleVersionEndpoint)
 }
 
+/**
+ * Github response for latest Gradle release.
+ */
 @Serializable
 data class GithubGradleVersion(
     val url: String,
@@ -106,15 +123,20 @@ data class GithubGradleVersion(
 internal class GradleVersionSerializer : KSerializer<GradleVersion> {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("version", PrimitiveKind.STRING)
 
-    override fun deserialize(decoder: Decoder): GradleVersion = decoder.decodeString().parseGradleVersion() ?: error("Invalid version format")
+    override fun deserialize(decoder: Decoder): GradleVersion =
+        decoder.decodeString().parseGradleVersion() ?: error("Invalid version format")
 
     override fun serialize(encoder: Encoder, value: GradleVersion) = encoder.encodeString(value.toString())
 
 }
 
+/**
+ * Parses this [String] into a [GradleVersion].
+ * @return can be null if not formatted correctly
+ */
 fun String.parseGradleVersion(): GradleVersion? {
     val match = gradleVersionPattern.matchEntire(this) ?: return null
     val (_, major, minor, revision) = match.groupValues
 
-    return GradleVersion(major.toInt(), minor.toInt(), if(revision.isBlank()) null else revision.toInt())
+    return GradleVersion(major.toInt(), minor.toInt(), if (revision.isBlank()) null else revision.toInt())
 }

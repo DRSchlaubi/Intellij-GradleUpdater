@@ -33,6 +33,9 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.impl.source.codeStyle.CodeEditUtil
 import me.schlaubi.intellij_gradle_version_checker.GradleUpdaterBundle
 
+/**
+ * Quickfix for [GradleWrapperVersionInspection] replacing the old version with the latest one.
+ */
 open class UpgradeGradleVersionQuickFix internal constructor(
     private val latestGradleVersion: String,
     private val currentGradleVersion: String
@@ -47,9 +50,12 @@ open class UpgradeGradleVersionQuickFix internal constructor(
         // For some reason Property.setValue() escapes https\:// to https\\:// which causes gradle build to fail
         // So we replace the value manually to prevent escaping
         val oldNode = (property as PropertyImpl).valueNode as PropertyValueImpl
-        val newNode = PropertyValueImpl(oldNode.elementType, currentValue.replace(currentGradleVersion, latestGradleVersion)).apply {
+        val newNode = PropertyValueImpl(
+            oldNode.elementType,
+            currentValue.replace(currentGradleVersion, latestGradleVersion)
+        ).apply {
             CodeEditUtil.setNodeGenerated(this, true)
         }
         property.node.replaceChild(oldNode, newNode)
     }
- }
+}

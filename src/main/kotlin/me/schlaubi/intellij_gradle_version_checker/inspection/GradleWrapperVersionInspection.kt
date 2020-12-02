@@ -33,9 +33,13 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
 import me.schlaubi.intellij_gradle_version_checker.*
 
+/**
+ * Inspection inspecting gradle-wrapper.properties for outdated Gradle version.
+ * @see LocalInspectionTool
+ */
 class GradleWrapperVersionInspection : LocalInspectionTool() {
 
-    override fun getStaticDescription(): String? =
+    override fun getStaticDescription(): String =
         GradleUpdaterBundle.getMessage("inspection.outdated_version.static_description")
 
     override fun buildVisitor(
@@ -56,12 +60,10 @@ class GradleWrapperVersionInspection : LocalInspectionTool() {
                     element.name != WRAPPER_VERSION_PROPERTY
                 ) return
                 val value = element.value ?: return
-                val fileName = value.substringAfterLast('/') // /gradle-6.3-bin.zip
-                val version = fileName.substringAfter("gradle-").substringBefore(".zip")
-                val (versionName, _ /* type */) = version.split("-")
-                val gradleVersion = versionName.parseGradleVersion() ?: return
+                val gradleVersion = extractVersionFromDistributionUrlProperty(value) ?: return
                 val comparison = latestGradleVersion.gradleVersion.compareTo(gradleVersion)
                 if (comparison != 0) {
+                    val currentGradleVersion = gradleVersion.toString()
                     holder.registerProblem(
                         element,
                         GradleUpdaterBundle.getMessage(
@@ -75,10 +77,13 @@ class GradleWrapperVersionInspection : LocalInspectionTool() {
                             GradleVersion.TOO_NEW -> ProblemHighlightType.ERROR
                             else -> error("Invalid severity: $comparison")
                         },
-                        UpgradeGradleVersionQuickFix(latestGradleVersion.gradleVersion.toString(), versionName),
+                        UpgradeGradleVersionQuickFix(
+                            latestGradleVersion.gradleVersion.toString(),
+                            currentGradleVersion
+                        ),
                         UpgradeGradleVersionAndSyncQuickFix(
                             latestGradleVersion.gradleVersion.toString(),
-                            versionName
+                            currentGradleVersion
                         )
                     )
                 }

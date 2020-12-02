@@ -29,23 +29,21 @@ import com.intellij.openapi.project.Project
 import com.intellij.ui.components.JBCheckBox
 import javax.swing.*
 
-class GradleVersionApplicationSettingsConfigurable : Configurable {
-    override fun createComponent(): JComponent? = null
-
-    override fun isModified(): Boolean = false
-
-    override fun apply() = Unit
-
-    override fun getDisplayName(): String = "Gradle Version Updater Settings"
-
-}
-
+/**
+ * [Configurable] for [ApplicationGradleVersionSettings].
+ */
 class ApplicationGradleVersionSettingsConfigurable :
     AbstractGradleVersionApplicationSettingsConfigurable({ ApplicationGradleVersionSettings })
 
+/**
+ * [Configurable] for [ProjectPersistentGradleVersionSettings].
+ */
 class ProjectGradleVersionSettingsConfigurable(project: Project) :
     AbstractGradleVersionApplicationSettingsConfigurable({ ProjectPersistentGradleVersionSettings.getInstance(project) })
 
+/**
+ * Base class for [Configurable] configuring [GradleVersionSettings].
+ */
 sealed class AbstractGradleVersionApplicationSettingsConfigurable(private val settingsProvider: () -> GradleVersionSettings) :
     Configurable {
 

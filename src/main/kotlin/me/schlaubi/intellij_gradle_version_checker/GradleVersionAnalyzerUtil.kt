@@ -1,3 +1,5 @@
+package me.schlaubi.intellij_gradle_version_checker
+
 /*
  * MIT License
  *
@@ -22,47 +24,13 @@
  * SOFTWARE.
  */
 
-plugins {
-    id("org.jetbrains.intellij") version "0.6.1"
-    kotlin("jvm") version "1.4.20"
-    kotlin("plugin.serialization") version "1.4.20"
-}
+/**
+ * Extracts the Gradle version from the [distributionUrl property](property) in gradle-wrapper.properties.
+ */
+fun extractVersionFromDistributionUrlProperty(property: String): GradleVersion? {
+    val fileName = property.substringAfterLast('/') // /gradle-6.3-bin.zip
+    val version = fileName.substringAfter("gradle-").substringBefore(".zip")
+    val (versionName, _ /* type */) = version.split("-")
 
-group = "me.schlaubi"
-version = "1.1-SNAPSHOT"
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    implementation("org.jetbrains.kotlinx", "kotlinx-serialization-json", "1.0.1")
-    implementation("io.ktor", "ktor-client-okhttp", "1.4.2")
-    implementation("io.ktor", "ktor-client-serialization-jvm", "1.4.2")
-}
-
-tasks {
-    compileKotlin {
-        kotlinOptions {
-            jvmTarget = "1.8"
-        }
-    }
-}
-
-// See https://github.com/JetBrains/gradle-intellij-plugin/
-intellij {
-    version = "2020.3"
-
-    setPlugins(
-        // For gradle support
-        "gradle",
-        // To properly parse gradle-wrapper.properties
-        "properties"
-    )
-}
-tasks.getByName<org.jetbrains.intellij.tasks.PatchPluginXmlTask>("patchPluginXml") {
-    changeNotes("""
-        - Code clean up
-        - Fix spelling mistakes
-    """.trimIndent())
+    return versionName.parseGradleVersion()
 }

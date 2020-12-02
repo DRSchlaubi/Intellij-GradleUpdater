@@ -61,8 +61,11 @@ intellij {
     )
 }
 tasks.getByName<org.jetbrains.intellij.tasks.PatchPluginXmlTask>("patchPluginXml") {
-    changeNotes("""
-        - Code clean up
-        - Fix spelling mistakes
-    """.trimIndent())
+    changeNotes(
+        """
+        - Migrate to IntelliJ 2020.3
+        - Refactor code
+        - Update dependencies
+    """.trimIndent()
+    )
 }

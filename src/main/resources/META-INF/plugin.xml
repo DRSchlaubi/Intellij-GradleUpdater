@@ -33,18 +33,23 @@
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.java</depends>
     <depends>com.intellij.properties</depends>
     <depends>com.intellij.gradle</depends>
+    <depends>org.jetbrains.kotlin</depends>
 
     <resource-bundle>messages.GradleUpdater</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
+        <copyPastePostProcessor
+                implementation="me.schlaubi.intellij_gradle_version_checker.copy.ConvertGroovyCopyPasteProcessor"/>
         <applicationService
                 serviceImplementation="me.schlaubi.intellij_gradle_version_checker.settings.ApplicationPersistentGradleVersionSettings"/>
         <projectService
                 serviceImplementation="me.schlaubi.intellij_gradle_version_checker.settings.ProjectPersistentGradleVersionSettings"/>
 
-        <groupConfigurable parentId="tools" descriptionKey="configurables.group.description" displayNameKey="configurables.group.display_name"
+        <groupConfigurable parentId="tools" descriptionKey="configurables.group.description"
+                           displayNameKey="configurables.group.display_name"
                            id="me.schlaubi.intellij_gradle_version_checker.settings"/>
         <applicationConfigurable
                 parentId="me.schlaubi.intellij_gradle_version_checker.settings"
@@ -70,9 +75,19 @@
                 displayName="Outdated Gradle version"
                 groupKey="inspection.group.name"
                 hasStaticDescription="true"
-                implementationClass="me.schlaubi.intellij_gradle_version_checker.inspection.GradleWrapperVersionInspection"
+                implementationClass="me.schlaubi.intellij_gradle_version_checker.inspection.wrapper.GradleWrapperVersionInspection"
         />
 
-        <notificationGroup displayType="BALLOON" id="me.schlaubi.intellij_gradle_version_checker.notifications.OutdatedVersion" key="notification.group.title"/>
+        <localInspection
+                language="kotlin"
+                displayName="Compile"
+                groupName="inspection.group.name"
+                enabledByDefault="true"
+                implementationClass="me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.CompileDependencyInspection"
+        />
+
+        <notificationGroup displayType="BALLOON"
+                           id="me.schlaubi.intellij_gradle_version_checker.notifications.OutdatedVersion"
+                           key="notification.group.title"/>
     </extensions>
 </idea-plugin>

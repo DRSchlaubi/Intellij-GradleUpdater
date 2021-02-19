@@ -22,12 +22,13 @@
  * SOFTWARE.
  */
 
-package me.schlaubi.intellij_gradle_version_checker.inspection
+package me.schlaubi.intellij_gradle_version_checker.inspection.wrapper
 
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.openapi.externalSystem.autoimport.ExternalSystemProjectTracker
 import com.intellij.openapi.project.Project
 import me.schlaubi.intellij_gradle_version_checker.GradleUpdaterBundle
+import me.schlaubi.intellij_gradle_version_checker.inspection.refreshGradle
 
 /**
  * Extension of [UpgradeGradleVersionQuickFix] which also calls [ExternalSystemProjectTracker.scheduleProjectRefresh].
@@ -40,6 +41,6 @@ class UpgradeGradleVersionAndSyncQuickFix(latestGradleVersion: String, currentGr
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
         super.applyFix(project, descriptor)
 
-        ExternalSystemProjectTracker.getInstance(project).scheduleProjectRefresh()
+        project.refreshGradle()
     }
 }

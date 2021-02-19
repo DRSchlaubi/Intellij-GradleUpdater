@@ -30,7 +30,7 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.guessProjectDir
-import me.schlaubi.intellij_gradle_version_checker.inspection.GradleWrapperVersionInspection
+import me.schlaubi.intellij_gradle_version_checker.inspection.wrapper.GradleWrapperVersionInspection
 import me.schlaubi.intellij_gradle_version_checker.settings.ApplicationGradleVersionSettings
 import me.schlaubi.intellij_gradle_version_checker.settings.ProjectPersistentGradleVersionSettings
 import java.io.ByteArrayInputStream
@@ -60,6 +60,7 @@ object GradleVersionNotifier {
             ),
             NotificationType.WARNING
         )
+
         notification.addAction(IgnoreForThisProjectAction())
         notification.addAction(IgnoreAction())
         notification.addAction(UpdateGradleVersionAction())

@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package me.schlaubi.intellij_gradle_version_checker.inspection
+package me.schlaubi.intellij_gradle_version_checker.inspection.wrapper
 
 import com.intellij.codeInspection.LocalInspectionTool
 import com.intellij.codeInspection.LocalInspectionToolSession

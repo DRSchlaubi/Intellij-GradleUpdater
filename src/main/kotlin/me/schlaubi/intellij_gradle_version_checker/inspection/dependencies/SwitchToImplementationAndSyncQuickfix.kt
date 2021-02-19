@@ -22,14 +22,21 @@
  * SOFTWARE.
  */
 
-package me.schlaubi.intellij_gradle_version_checker
+package me.schlaubi.intellij_gradle_version_checker.inspection.dependencies
 
-import com.intellij.DynamicBundle
+import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.openapi.project.Project
+import me.schlaubi.intellij_gradle_version_checker.GradleUpdaterBundle
+import me.schlaubi.intellij_gradle_version_checker.inspection.refreshGradle
 
-/**
- * [DynamicBundle] for messages of this plugin.
- */
-object GradleUpdaterBundle : DynamicBundle("messages.GradleUpdater") {
-    @JvmStatic
-    fun getMessage(key: String) = super.getMessage(key)
+object SwitchToImplementationAndSyncQuickfix : SwitchToImplementationQuickfix() {
+
+    override fun getFamilyName(): String =
+        GradleUpdaterBundle.getMessage("quickfix.migrate_to_implementation_and_sync.family_name")
+
+    override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+        super.applyFix(project, descriptor)
+
+        project.refreshGradle()
+    }
 }

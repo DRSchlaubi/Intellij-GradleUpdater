@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package me.schlaubi.intellij_gradle_version_checker.inspection
+package me.schlaubi.intellij_gradle_version_checker.inspection.wrapper
 
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
@@ -39,8 +39,7 @@ import me.schlaubi.intellij_gradle_version_checker.GradleUpdaterBundle
 open class UpgradeGradleVersionQuickFix internal constructor(
     private val latestGradleVersion: String,
     private val currentGradleVersion: String
-) :
-    LocalQuickFix {
+) : LocalQuickFix {
     override fun getFamilyName(): String = GradleUpdaterBundle.getMessage("quickfix.update_gradle.family_name")
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {

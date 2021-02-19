@@ -22,14 +22,27 @@
  * SOFTWARE.
  */
 
-package me.schlaubi.intellij_gradle_version_checker
+package me.schlaubi.intellij_gradle_version_checker.inspection.dependencies
 
-import com.intellij.DynamicBundle
+import com.intellij.codeInspection.LocalQuickFix
+import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.openapi.project.Project
+import me.schlaubi.intellij_gradle_version_checker.GradleUpdaterBundle
+import org.jetbrains.kotlin.psi.KtCallExpression
+import org.jetbrains.kotlin.psi.KtPsiFactory
 
-/**
- * [DynamicBundle] for messages of this plugin.
- */
-object GradleUpdaterBundle : DynamicBundle("messages.GradleUpdater") {
-    @JvmStatic
-    fun getMessage(key: String) = super.getMessage(key)
+open class SwitchToImplementationQuickfix internal constructor(): LocalQuickFix {
+    override fun getFamilyName(): String =
+        GradleUpdaterBundle.getMessage("quickfix.migrate_to_implementation.family_name")
+
+    override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+        val call =
+            descriptor.psiElement as? KtCallExpression ?: error("This quick fix cannot be use outside of kt calls")
+
+        val implementation = KtPsiFactory(project).createExpression("implementation")
+
+        call.calleeExpression!!.replace(implementation)
+    }
+
+    companion object : SwitchToImplementationQuickfix()
 }

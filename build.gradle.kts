@@ -23,9 +23,10 @@
  */
 
 plugins {
-    id("org.jetbrains.intellij") version "0.6.1"
-    kotlin("jvm") version "1.4.20"
-    kotlin("plugin.serialization") version "1.4.20"
+    java
+    id("org.jetbrains.intellij") version "0.6.5"
+    kotlin("jvm") version "1.4.30"
+    kotlin("plugin.serialization") version "1.4.30"
 }
 
 group = "me.schlaubi"
@@ -37,8 +38,8 @@ repositories {
 
 dependencies {
     implementation("org.jetbrains.kotlinx", "kotlinx-serialization-json", "1.0.1")
-    implementation("io.ktor", "ktor-client-okhttp", "1.4.2")
-    implementation("io.ktor", "ktor-client-serialization-jvm", "1.4.2")
+    implementation("io.ktor", "ktor-client-okhttp", "1.5.1")
+    implementation("io.ktor", "ktor-client-serialization-jvm", "1.5.1")
 }
 
 tasks {
@@ -57,7 +58,11 @@ intellij {
         // For gradle support
         "gradle",
         // To properly parse gradle-wrapper.properties
-        "properties"
+        "properties",
+        // Some kotlin classes depend on the java plugin
+        "java",
+        // To properly parse build.gradle.kts
+        "org.jetbrains.kotlin"
     )
 }
 tasks.getByName<org.jetbrains.intellij.tasks.PatchPluginXmlTask>("patchPluginXml") {
@@ -68,4 +73,8 @@ tasks.getByName<org.jetbrains.intellij.tasks.PatchPluginXmlTask>("patchPluginXml
         - Update dependencies
     """.trimIndent()
     )
+}
+
+configure<JavaPluginConvention> {
+    sourceCompatibility = JavaVersion.VERSION_1_8
 }

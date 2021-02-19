@@ -22,14 +22,10 @@
  * SOFTWARE.
  */
 
-package me.schlaubi.intellij_gradle_version_checker
+package me.schlaubi.intellij_gradle_version_checker.inspection
 
-import com.intellij.DynamicBundle
+import com.intellij.openapi.externalSystem.autoimport.ExternalSystemProjectTracker
+import com.intellij.openapi.project.Project
 
-/**
- * [DynamicBundle] for messages of this plugin.
- */
-object GradleUpdaterBundle : DynamicBundle("messages.GradleUpdater") {
-    @JvmStatic
-    fun getMessage(key: String) = super.getMessage(key)
-}
+@Suppress("UnstableApiUsage")
+fun Project.refreshGradle() = ExternalSystemProjectTracker.getInstance(this).scheduleProjectRefresh()

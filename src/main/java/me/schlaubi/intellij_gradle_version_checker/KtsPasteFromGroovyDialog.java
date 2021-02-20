@@ -27,6 +27,7 @@ package me.schlaubi.intellij_gradle_version_checker;
 import com.intellij.CommonBundle;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import me.schlaubi.intellij_gradle_version_checker.settings.ProjectPersistentGradleVersionSettings;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -38,9 +39,11 @@ public class KtsPasteFromGroovyDialog extends DialogWrapper {
     private JCheckBox donTShowThisCheckBox;
     private JLabel questionLabel;
     private JButton buttonOK;
+    private Project project;
 
     public KtsPasteFromGroovyDialog(@NotNull Project project) {
         super(project, true);
+        this.project = project;
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
         setTitle(GradleUpdaterBundle.getMessage("copypaste.onpaste.seems.like.groovy"));
@@ -67,6 +70,10 @@ public class KtsPasteFromGroovyDialog extends DialogWrapper {
 
     @Override
     protected void doOKAction() {
+        if (donTShowThisCheckBox.isSelected()) {
+            ProjectPersistentGradleVersionSettings.getInstance(project).setAlwaysConvertGroovy(true);
+        }
+
         super.doOKAction();
     }
 }

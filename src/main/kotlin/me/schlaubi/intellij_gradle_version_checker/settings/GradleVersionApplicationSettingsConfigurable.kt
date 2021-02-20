@@ -50,6 +50,8 @@ sealed class AbstractGradleVersionApplicationSettingsConfigurable(private val se
     private val originSettings = settingsProvider()
     private val settings = originSettings.asMemoryCopy()
     private val ignoreVersionBox = JBCheckBox("Check Gradle version on project load", settings.ignoreOutdatedVersion)
+    private val alwaysConvertGroovyBox =
+        JBCheckBox("Always convert Gradle to Groovy in Gradle files", settings.alwaysConvertGroovy)
 
     override fun createComponent(): JComponent? = JPanel().apply panel@{
         layout = BoxLayout(this@panel, BoxLayout.Y_AXIS)
@@ -58,7 +60,12 @@ sealed class AbstractGradleVersionApplicationSettingsConfigurable(private val se
             val box = it.source as JBCheckBox
             settings.ignoreOutdatedVersion = box.isSelected
         }
-        add(ignoreVersionBox)
+
+        alwaysConvertGroovyBox.addChangeListener {
+            val box = it.source as JBCheckBox
+            settings.ignoreOutdatedVersion = box.isSelected
+        }
+        add(alwaysConvertGroovyBox)
     }
 
     override fun reset() {

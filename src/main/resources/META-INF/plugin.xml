@@ -86,6 +86,23 @@
                 implementationClass="me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.CompileDependencyInspection"
         />
 
+        <localInspection
+                language="kotlin"
+                displayName="Gradle missusage"
+                groupName="inspection.group.name"
+                enabledByDefault="true"
+                implementationClass="me.schlaubi.intellij_gradle_version_checker.inspection.plugins.KotlinPluginWithIdInspection"
+        />
+
+        <localInspection
+                language="kotlin"
+                displayName="Gradle missusage"
+                groupName="inspection.group.name"
+                enabledByDefault="true"
+                implementationClass="me.schlaubi.intellij_gradle_version_checker.inspection.plugins.BuiltInPluginWithIdInspection"
+        />
+
+
         <notificationGroup displayType="BALLOON"
                            id="me.schlaubi.intellij_gradle_version_checker.notifications.OutdatedVersion"
                            key="notification.group.title"/>

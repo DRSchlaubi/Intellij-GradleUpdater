@@ -28,24 +28,38 @@ import com.intellij.codeInsight.editorActions.CopyPastePostProcessor
 import com.intellij.codeInsight.editorActions.TextBlockTransferable
 import com.intellij.codeInsight.editorActions.TextBlockTransferableData
 import com.intellij.openapi.diagnostic.ControlFlowException
+import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.RangeMarker
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Ref
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDocumentManager
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.util.PsiTreeUtil
 import me.schlaubi.intellij_gradle_version_checker.KtsPasteFromGroovyDialog
+import okhttp3.internal.toImmutableList
+import org.jetbrains.kotlin.KtNodeTypes
 import org.jetbrains.kotlin.idea.caches.resolve.resolveImportReference
+import org.jetbrains.kotlin.idea.formatter.commitAndUnblockDocument
 import org.jetbrains.kotlin.idea.util.application.runWriteAction
 import org.jetbrains.kotlin.name.FqName
+import org.jetbrains.kotlin.psi.KtConstantExpression
 import org.jetbrains.kotlin.psi.KtFile
+import org.jetbrains.kotlin.psi.KtPsiFactory
+import org.jetbrains.kotlin.psi.psiUtil.elementsInRange
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.Transferable
 
 // https://regex101.com/r/kZ258U/3
-private val DECLARATION_REGEX =
+private val DEPENDENCY_DECLARATION_REGEX =
     """(\w+)\s+(?:group:\s+)?["'](.+?)(?::|(?:(?:['"]),\s*(?:artifact:\s*)?(?:['"])))(.+?)(?:(?::|(?:(?:['"]),\s*(?:version:\s*)?(?:['"])))(.*))?(?:['"])""".toRegex()
+
+// https://regex101.com/r/lEKNuH/1/
+private val PLUGIN_DECLARATION_REGEX =
+    "id\\s*['\"]([\\w.]*)['\"](?:\\s* version\\s*['\"]([\\w.-A-Za-z]*)['\"])?".toRegex()
 
 private class MyTransferableData(val text: String) : TextBlockTransferableData {
 
@@ -100,28 +114,77 @@ class ConvertGroovyCopyPasteProcessor : CopyPastePostProcessor<TextBlockTransfer
         val data = values.single() as MyTransferableData
         val text = TextBlockTransferable.convertLineSeparators(editor, data.text, values)
 
-        val dependencies = DECLARATION_REGEX.findAll(text).toList().mapToDependencies()
-        if (dependencies.isEmpty()) return
+        val dependencies = DEPENDENCY_DECLARATION_REGEX.findAll(text).toList().mapToDependencies()
+        val plugins = PLUGIN_DECLARATION_REGEX.findAll(text).toList().mapToPlugins()
+        val items = dependencies + plugins
+        var end = bounds.endOffset
+        // We're making this lazy so if we find dependencies and plugins we replace them first
+        // and the recalculate '/" as the other migrations already replace them
+        // if not we just replace them
+        val singleQuoteStrings by lazy {
+            targetFile.elementsInRange(TextRange.from(bounds.startOffset, end))
+                .flatMap { PsiTreeUtil.findChildrenOfType(it, KtConstantExpression::class.java) }
+                .asSequence()
+                .filter { it.elementType == KtNodeTypes.CHARACTER_CONSTANT }
+                .filter { it.textLength != 3 } // 3 chars = 1 char + 2 ' => valid char, 2 chars however is just '' which is not a valid char
+                .toList()
+        }
+        if (items.isEmpty() && singleQuoteStrings.isEmpty()) return
 
         if (!confirmConversion(project)) return
 
+        end = items.replace(editor.document, bounds.startOffset)
+
+        if (items.isNotEmpty()) {
+            targetFile.commitAndUnblockDocument() // commit original changes to not re migrate "/'
+        }
+
         runWriteAction {
-            dependencies.fold(bounds.startOffset) { startOffset, dependency ->
-                val range = dependency.range
-                val migratedDependency = dependency.toString()
-                val offset = migratedDependency.length - (range.last - range.first)
-                val realRange = range.withOffset(startOffset)
-
-                editor.document.replaceString(
-                    realRange.first,
-                    realRange.last + 1, // End is exclusive
-                    migratedDependency
-                )
-
-                startOffset + offset - 1
-            }
+            singleQuoteStrings.forEach {
+                    it.replace(
+                        KtPsiFactory(project).createStringTemplate(
+                            it.text.substring(
+                                1,
+                                it.text.length - 1
+                            )
+                        )
+                    )
+                }
         }
     }
+}
+
+private val PsiElement.everyChildren: List<PsiElement>
+    get() {
+        val list = mutableListOf<PsiElement>()
+
+
+        return list.toImmutableList()
+    }
+
+private fun <T : Migratable> List<T>.replace(
+    document: Document,
+    start: Int,
+) = runWriteAction {
+    fold(start) { startOffset, item ->
+        val range = item.range
+        val migrated = item.migrateString()
+        val offset = migrated.length - (range.last - range.first)
+        val realRange = range.withOffset(startOffset)
+
+        document.replaceString(
+            realRange.first,
+            realRange.last + 1, // End is exclusive
+            migrated
+        )
+
+        startOffset + offset - 1
+    }
+}
+
+interface Migratable {
+    val range: IntRange
+    fun migrateString(): String
 }
 
 private data class DependencyDeclaration(
@@ -129,9 +192,9 @@ private data class DependencyDeclaration(
     val group: String,
     val artifact: String,
     val version: String?,
-    val range: IntRange
-) {
-    override fun toString(): String = """$config("$group:$artifact${version?.let { ":$version" } ?: ""}")"""
+    override val range: IntRange
+) : Migratable {
+    override fun migrateString(): String = """$config("$group:$artifact${version?.let { ":$version" } ?: ""}")"""
 
     companion object {
         fun fromMatch(match: MatchResult): DependencyDeclaration {
@@ -143,9 +206,43 @@ private data class DependencyDeclaration(
     }
 }
 
+private data class PluginDeclaration(val id: String, val version: String?, override val range: IntRange) :
+    Migratable {
+    override fun migrateString(): String {
+        return if (id in gradleOfficialPlugins) {
+            if ("-" in id) {
+                "`$id`"
+            } else id
+        } else {
+            buildString {
+                val kotlinId = id.substringAfter("org.jetbrains.kotlin.")
+                if (kotlinId != id) {
+                    // 'kotlin("<module>")'
+                    append("kotlin").append('(').append('"').append(kotlinId).append('"').append(')')
+                } else {
+                    // 'id("<id>")
+                    append("id").append('(').append('"').append(kotlinId).append('"').append(')')
+                }
+                if (version != null) {
+                    // ' version "<version>"
+                    append(' ').append("version").append(' ').append('"').append(version).append('"')
+                }
+            }
+        }
+    }
+
+    companion object {
+        fun fromMatch(matchResult: MatchResult): PluginDeclaration {
+            val (id, version) = matchResult.destructured
+            return PluginDeclaration(id, version.asNullable(), matchResult.range)
+        }
+    }
+}
+
 fun IntRange.withOffset(offset: Int) = (first + offset)..(last + offset)
 
 private fun Iterable<MatchResult>.mapToDependencies() = map(DependencyDeclaration::fromMatch)
+private fun Iterable<MatchResult>.mapToPlugins() = map(PluginDeclaration::fromMatch)
 
 private fun confirmConversion(project: Project): Boolean {
     val dialog =
@@ -155,3 +252,96 @@ private fun confirmConversion(project: Project): Boolean {
 }
 
 fun String.asNullable() = if (isBlank()) null else this
+
+val gradleOfficialPlugins = listOf(
+    "project-report",
+    "project-reports",
+    "help-tasks",
+    "binary-base",
+    "component-base",
+    "language-base",
+    "lifecycle-base",
+    "build-dashboard",
+    "reporting-base",
+    "java-lang",
+    "jvm-resources",
+    "jvm-component",
+    "application",
+    "base",
+    "distribution",
+    "groovy-base",
+    "groovy",
+    "java-base",
+    "java-library-distribution",
+    "java-library",
+    "java-platform",
+    "java-test-fixtures",
+    "java",
+    "jvm-ecosystem",
+    "version-catalog",
+    "war",
+    "junit-test-suite",
+    "publishing",
+    "antlr",
+    "build-init",
+    "wrapper",
+    "checkstyle",
+    "codenarc",
+    "pmd",
+    "ear",
+    "eclipse-wtp",
+    "eclipse",
+    "idea",
+    "visual-studio",
+    "xcode",
+    "play-ide",
+    "ivy-publish",
+    "jacoco",
+    "coffeescript-base",
+    "envjs",
+    "javascript-base",
+    "jshint",
+    "rhino",
+    "assembler-lang",
+    "assembler",
+    "c-lang",
+    "c",
+    "cpp-application",
+    "cpp-lang",
+    "cpp-library",
+    "cpp",
+    "objective-c-lang",
+    "objective-c",
+    "objective-cpp-lang",
+    "objective-cpp",
+    "swift-application",
+    "swift-library",
+    "swiftpm-export",
+    "windows-resource-script",
+    "windows-resources",
+    "scala-lang",
+    "maven-publish",
+    "maven",
+    "clang-compiler",
+    "gcc-compiler",
+    "microsoft-visual-cpp-compiler",
+    "native-component-model",
+    "native-component",
+    "standard-tool-chains",
+    "play-application",
+    "play-coffeescript",
+    "play-javascript",
+    "play",
+    "groovy-gradle-plugin",
+    "java-gradle-plugin",
+    "scala-base",
+    "scala",
+    "signing",
+    "cpp-unit-test",
+    "cunit-test-suite",
+    "cunit",
+    "google-test-test-suite",
+    "google-test",
+    "xctest"
+)
+

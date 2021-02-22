@@ -45,7 +45,7 @@ import java.awt.datatransfer.Transferable
 
 // https://regex101.com/r/1OMz6a/1
 private val DECLARATION_REGEX =
-    """(\w+)\s+(?:group:\s*)?["']([^"':]+)(?::|["'],\s*(?:artifact:\s*)?['"])?([^"':]+)(?::|['"],\s*(?:version:\s*)?['"])?([^"':]+)?(?:['"])""".toRegex()
+    """(\w+)\s+(?:group:\s*)?["']([^"':]+)(?::|["'],\s*(?:artifact:\s*)?['"])([^"':]+)(?::|['"],\s*(?:version:\s*)?['"])?([^"':]+)?(?:['"])""".toRegex()
 
 private class MyTransferableData(val text: String) : TextBlockTransferableData {
 

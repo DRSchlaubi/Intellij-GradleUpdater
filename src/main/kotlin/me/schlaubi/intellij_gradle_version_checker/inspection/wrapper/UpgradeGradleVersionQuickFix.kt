@@ -32,6 +32,12 @@ import com.intellij.lang.properties.psi.impl.PropertyValueImpl
 import com.intellij.openapi.project.Project
 import com.intellij.psi.impl.source.codeStyle.CodeEditUtil
 import me.schlaubi.intellij_gradle_version_checker.GradleUpdaterBundle
+import me.schlaubi.intellij_gradle_version_checker.replace
+import org.jetbrains.plugins.gradle.service.project.GradleProjectModel
+import org.jetbrains.plugins.gradle.service.project.GradleProjectResolverUtil
+import org.jetbrains.plugins.gradle.settings.GradleExtensionsSettings
+import org.jetbrains.plugins.gradle.settings.GradleProjectSettings
+import org.jetbrains.plugins.gradle.tooling.ModelBuilderService
 
 /**
  * Quickfix for [GradleWrapperVersionInspection] replacing the old version with the latest one.
@@ -44,17 +50,6 @@ open class UpgradeGradleVersionQuickFix internal constructor(
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
         val property = descriptor.psiElement as? Property ?: error("This quick fix cannot be use outside of properties")
-        val currentValue = property.value ?: error("Property does not have a value yet")
-
-        // For some reason Property.setValue() escapes https\:// to https\\:// which causes gradle build to fail
-        // So we replace the value manually to prevent escaping
-        val oldNode = (property as PropertyImpl).valueNode as PropertyValueImpl
-        val newNode = PropertyValueImpl(
-            oldNode.elementType,
-            currentValue.replace(currentGradleVersion, latestGradleVersion)
-        ).apply {
-            CodeEditUtil.setNodeGenerated(this, true)
-        }
-        property.node.replaceChild(oldNode, newNode)
+        property.replace(currentGradleVersion, latestGradleVersion)
     }
 }

@@ -36,11 +36,9 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Ref
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDocumentManager
-import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
 import me.schlaubi.intellij_gradle_version_checker.KtsPasteFromGroovyDialog
-import okhttp3.internal.toImmutableList
 import org.jetbrains.kotlin.KtNodeTypes
 import org.jetbrains.kotlin.idea.caches.resolve.resolveImportReference
 import org.jetbrains.kotlin.idea.formatter.commitAndUnblockDocument
@@ -55,7 +53,7 @@ import java.awt.datatransfer.Transferable
 
 // https://regex101.com/r/kZ258U/3
 private val DEPENDENCY_DECLARATION_REGEX =
-    """(\w+)\s+(?:group:\s+)?["'](.+?)(?::|(?:(?:['"]),\s*(?:artifact:\s*)?(?:['"])))(.+?)(?:(?::|(?:(?:['"]),\s*(?:version:\s*)?(?:['"])))(.*))?(?:['"])""".toRegex()
+    """(\w+)\s+(?:group:\s+)?["'](.+?)(?::|['"],\s*(?:artifact:\s*)?['"])(.+?)(?:(?::|['"],\s*(?:version:\s*)?['"])(.*))?['"]""".toRegex()
 
 // https://regex101.com/r/lEKNuH/1/
 private val PLUGIN_DECLARATION_REGEX =
@@ -99,13 +97,14 @@ class ConvertGroovyCopyPasteProcessor : CopyPastePostProcessor<TextBlockTransfer
         return emptyList()
     }
 
+
     override fun processTransferableData(
         project: Project,
         editor: Editor,
         bounds: RangeMarker,
         caretOffset: Int,
-        indented: Ref<Boolean>,
-        values: List<TextBlockTransferableData>
+        indented: Ref<in Boolean>,
+        values: MutableList<out TextBlockTransferableData>
     ) {
         if (DumbService.getInstance(project).isDumb) return
         val targetFile = PsiDocumentManager.getInstance(project).getPsiFile(editor.document) as? KtFile ?: return
@@ -141,26 +140,18 @@ class ConvertGroovyCopyPasteProcessor : CopyPastePostProcessor<TextBlockTransfer
 
         runWriteAction {
             singleQuoteStrings.forEach {
-                    it.replace(
-                        KtPsiFactory(project).createStringTemplate(
-                            it.text.substring(
-                                1,
-                                it.text.length - 1
-                            )
+                it.replace(
+                    KtPsiFactory(project).createStringTemplate(
+                        it.text.substring(
+                            1,
+                            it.text.length - 1
                         )
                     )
-                }
+                )
+            }
         }
     }
 }
-
-private val PsiElement.everyChildren: List<PsiElement>
-    get() {
-        val list = mutableListOf<PsiElement>()
-
-
-        return list.toImmutableList()
-    }
 
 private fun <T : Migratable> List<T>.replace(
     document: Document,
@@ -251,7 +242,7 @@ private fun confirmConversion(project: Project): Boolean {
     return dialog.isOK
 }
 
-fun String.asNullable() = if (isBlank()) null else this
+fun String.asNullable() = ifBlank { null }
 
 val gradleOfficialPlugins = listOf(
     "project-report",

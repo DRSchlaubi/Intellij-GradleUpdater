@@ -48,16 +48,17 @@
         <projectService
                 serviceImplementation="me.schlaubi.intellij_gradle_version_checker.settings.ProjectPersistentGradleVersionSettings"/>
 
-        <groupConfigurable parentId="tools" descriptionKey="configurables.group.description"
-                           displayNameKey="configurables.group.display_name"
-                           id="me.schlaubi.intellij_gradle_version_checker.settings"/>
+        <groupConfigurable descriptionKey="configurable.group.tools.gradle_updater.settings.display.description"
+                           displayNameKey="configurable.group.tools.gradle_updater.settings.display.name"
+                           id="tools.gradle_updater" parentId="tools"/>
+
         <applicationConfigurable
-                parentId="me.schlaubi.intellij_gradle_version_checker.settings"
+                groupId="tools.gradle_updater"
                 instance="me.schlaubi.intellij_gradle_version_checker.settings.ApplicationGradleVersionSettingsConfigurable"
                 id="me.schlaubi.intellij_gradle_version_checker.settings.ApplicationGradleVersionSettingsConfigurable"
                 displayName="Application Settings"/>
         <projectConfigurable
-                parentId="me.schlaubi.intellij_gradle_version_checker.settings"
+                parentId="tools.gradle_updater"
                 instance="me.schlaubi.intellij_gradle_version_checker.settings.ProjectGradleVersionSettingsConfigurable"
                 id="me.schlaubi.intellij_gradle_version_checker.settings.ProjectGradleVersionSettingsConfigurable"
                 displayName="Project Settings"/>
@@ -81,7 +82,7 @@
         <localInspection
                 language="kotlin"
                 displayName="Compile"
-                groupName="inspection.group.name"
+                groupKey="inspection.group.name"
                 enabledByDefault="true"
                 implementationClass="me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.CompileDependencyInspection"
         />
@@ -89,7 +90,7 @@
         <localInspection
                 language="kotlin"
                 displayName="Gradle missusage"
-                groupName="inspection.group.name"
+                groupKey="inspection.group.name"
                 enabledByDefault="true"
                 implementationClass="me.schlaubi.intellij_gradle_version_checker.inspection.plugins.KotlinPluginWithIdInspection"
         />
@@ -97,7 +98,7 @@
         <localInspection
                 language="kotlin"
                 displayName="Gradle missusage"
-                groupName="inspection.group.name"
+                groupKey="inspection.group.name"
                 enabledByDefault="true"
                 implementationClass="me.schlaubi.intellij_gradle_version_checker.inspection.plugins.BuiltInPluginWithIdInspection"
         />

@@ -29,6 +29,7 @@ import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.guessProjectDir
 import com.intellij.psi.PsiManager
@@ -80,7 +81,8 @@ class UpdateGradleVersionAction : AnAction(
         null
 ) {
     override fun actionPerformed(e: AnActionEvent) {
-        val gradlePropertiesPath = e.project!!
+        val project = e.project ?: return
+        val gradlePropertiesPath = project
                 .guessProjectDir()
                 ?.findChild("gradle")
                 ?.findChild("wrapper")
@@ -96,7 +98,9 @@ class UpdateGradleVersionAction : AnAction(
 
         val gradleVersion = extractVersionFromDistributionUrlProperty(value)?.toString() ?: return
 
-        property.replace(gradleVersion, latestGradleVersion.toString())
+        WriteCommandAction.runWriteCommandAction(project) {
+            property.replace(gradleVersion, latestGradleVersion.gradleVersion.toString())
+        }
     }
 }
 

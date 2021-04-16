@@ -27,7 +27,9 @@ package me.schlaubi.intellij_gradle_version_checker.settings
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.project.Project
 import com.intellij.ui.components.JBCheckBox
-import javax.swing.*
+import javax.swing.BoxLayout
+import javax.swing.JComponent
+import javax.swing.JPanel
 
 /**
  * [Configurable] for [ApplicationGradleVersionSettings].
@@ -44,8 +46,9 @@ class ProjectGradleVersionSettingsConfigurable(project: Project) :
 /**
  * Base class for [Configurable] configuring [GradleVersionSettings].
  */
-sealed class AbstractGradleVersionApplicationSettingsConfigurable(private val settingsProvider: () -> GradleVersionSettings) :
-    Configurable {
+sealed class AbstractGradleVersionApplicationSettingsConfigurable(
+    private val settingsProvider: () -> GradleVersionSettings
+) : Configurable {
 
     private val originSettings = settingsProvider()
     private val settings = originSettings.asMemoryCopy()

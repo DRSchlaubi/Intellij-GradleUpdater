@@ -1,21 +1,18 @@
 package me.schlaubi.intellij_gradle_version_checker
 
 import com.intellij.lang.properties.IProperty
+import com.intellij.lang.properties.psi.PropertiesResourceBundleUtil
+import com.intellij.lang.properties.psi.PropertyKeyValueFormat
 import com.intellij.lang.properties.psi.impl.PropertyImpl
-import com.intellij.lang.properties.psi.impl.PropertyValueImpl
-import com.intellij.psi.impl.source.codeStyle.CodeEditUtil
 
-fun IProperty.replace(old: String, new: String) {
+/**
+ * Replaces the string [old] with [new] in this property.
+ */
+fun IProperty.replace(old: String, new: String, format: PropertyKeyValueFormat = PropertyKeyValueFormat.MEMORY) {
     val currentValue = value ?: error("Property does not have a value yet")
-    // For some reason Property.setValue() escapes https\:// to https\\:// which causes gradle build to fail
-    // So we replace the value manually to prevent escaping
-    val oldNode = (this as PropertyImpl).valueNode as PropertyValueImpl
-    val newNode = PropertyValueImpl(
-        oldNode.elementType,
-        currentValue.replace(old, new)
-    ).apply {
-        CodeEditUtil.setNodeGenerated(this, true)
-    }
 
-    node.replaceChild(oldNode, newNode)
+    val replacement =
+        PropertiesResourceBundleUtil.convertValueToFileFormat(new, (this as PropertyImpl).keyValueDelimiter, format)
+
+    setValue(currentValue.replace(old, replacement), PropertyKeyValueFormat.FILE)
 }

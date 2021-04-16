@@ -68,6 +68,8 @@ sealed class AbstractGradleVersionApplicationSettingsConfigurable(
             val box = it.source as JBCheckBox
             settings.ignoreOutdatedVersion = box.isSelected
         }
+
+        add(ignoreVersionBox)
         add(alwaysConvertGroovyBox)
     }
 

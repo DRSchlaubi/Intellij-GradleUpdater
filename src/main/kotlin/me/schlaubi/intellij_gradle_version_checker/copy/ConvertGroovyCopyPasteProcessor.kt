@@ -51,9 +51,9 @@ import org.jetbrains.kotlin.psi.psiUtil.elementsInRange
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.Transferable
 
-// https://regex101.com/r/kZ258U/3
+// https://regex101.com/r/kZ258U/5
 private val DEPENDENCY_DECLARATION_REGEX =
-    """(\w+)\s+(?:group:\s+)?["'](.+?)(?::|['"],\s*(?:artifact:\s*)?['"])(.+?)(?:(?::|['"],\s*(?:version:\s*)?['"])(.*))?['"]""".toRegex()
+    """(\w+)\s+(?:group:\s*)?["']([^"':]+)(?::|["'],\s*(?:artifact:\s*)?['"])([^"':]+)(?::|['"],\s*(?:version:\s*)?['"])?([^"':]+)?['"]""".toRegex()
 
 // https://regex101.com/r/lEKNuH/1/
 private val PLUGIN_DECLARATION_REGEX =

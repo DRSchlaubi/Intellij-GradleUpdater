@@ -84,7 +84,7 @@
                 displayName="Compile"
                 groupKey="inspection.group.name"
                 enabledByDefault="true"
-                implementationClass="me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.CompileDependencyInspection"
+                implementationClass="me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.compile.CompileDependencyInspection"
         />
 
         <localInspection

@@ -22,16 +22,16 @@
  * SOFTWARE.
  */
 
-package me.schlaubi.intellij_gradle_version_checker.inspection.dependencies
+package me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.compile
 
 import com.intellij.codeInspection.LocalInspectionTool
 import com.intellij.codeInspection.LocalInspectionToolSession
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
-import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
 import me.schlaubi.intellij_gradle_version_checker.GradleUpdaterBundle
-import org.jetbrains.kotlin.nj2k.postProcessing.resolve
+import me.schlaubi.intellij_gradle_version_checker.calleeFunction
+import me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.DependencyDeclarationVisitor
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.stubs.KotlinFunctionStub
 
@@ -44,9 +44,8 @@ class CompileDependencyInspection : LocalInspectionTool() {
     ): PsiElementVisitor {
         if (session.file !is KtFile) return PsiElementVisitor.EMPTY_VISITOR
 
-        return object : PsiElementVisitor() {
-            override fun visitElement(element: PsiElement) {
-                if (element !is KtCallExpression || !element.isDeprecatedDependencyDeclaration()) return
+        return object : DependencyDeclarationVisitor(true) {
+            override fun visitDependencyDeclaration(element: KtCallExpression) { if (!element.isDeprecatedDependencyDeclaration()) return
 
                 holder.registerProblem(
                     element,
@@ -55,19 +54,18 @@ class CompileDependencyInspection : LocalInspectionTool() {
                     SwitchToImplementationQuickfix,
                     SwitchToImplementationAndSyncQuickfix
                 )
+
             }
         }
     }
 }
 
+private fun KtTypeParameterListOwnerStub<KotlinFunctionStub>.isDeprecated() =
+    annotationEntries.any { it.shortName?.asString() == "Deprecated" }
+
 private fun KtCallExpression.isDeprecatedDependencyDeclaration(): Boolean {
-    val function = ((calleeExpression as? KtReferenceExpression)?.resolve() as? KtNamedFunction) ?: return false
+    val function = calleeFunction ?: return false
 
     return function.isDeprecated() // Only complain if a Gradle version which actually deprecates this is used
             && function.name == "compile"
 }
-
-private fun KtTypeParameterListOwnerStub<KotlinFunctionStub>.isDeprecated() =
-    annotationEntries.any { it.shortName?.asString() == "Deprecated" }
-
-

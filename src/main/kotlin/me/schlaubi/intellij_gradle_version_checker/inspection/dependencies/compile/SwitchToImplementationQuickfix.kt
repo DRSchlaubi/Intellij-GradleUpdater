@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package me.schlaubi.intellij_gradle_version_checker.inspection.dependencies
+package me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.compile
 
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor

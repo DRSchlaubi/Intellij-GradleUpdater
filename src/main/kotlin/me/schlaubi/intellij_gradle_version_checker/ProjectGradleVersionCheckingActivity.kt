@@ -26,9 +26,11 @@ package me.schlaubi.intellij_gradle_version_checker
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.changes.shelf.ShelvedChangesViewManager
+import com.jetbrains.rd.util.first
 import me.schlaubi.intellij_gradle_version_checker.settings.ApplicationGradleVersionSettings
 import me.schlaubi.intellij_gradle_version_checker.settings.ProjectPersistentGradleVersionSettings
-import org.jetbrains.kotlin.idea.scripting.gradle.roots.GradleBuildRootData
+import org.jetbrains.plugins.gradle.settings.GradleExtensionsSettings
+import org.jetbrains.plugins.gradle.settings.GradleLocalSettings
 import org.jetbrains.plugins.gradle.settings.GradleSettings
 import org.gradle.util.GradleVersion as GGradleVersion
 
@@ -44,7 +46,6 @@ class ProjectGradleVersionCheckingActivity : ShelvedChangesViewManager.PostStart
             ).ignoreOutdatedVersion
         ) return
         val gradleSettings = GradleSettings.getInstance(project).getLinkedProjectSettings(project.basePath!!) ?: return
-
 
         if (gradleSettings.distributionType?.isWrapped == false) return
         val currentGradleVersion = gradleSettings.resolveGradleVersion().asGradleVersion()

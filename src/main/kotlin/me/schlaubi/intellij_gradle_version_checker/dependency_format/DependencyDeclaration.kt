@@ -22,10 +22,12 @@
  * SOFTWARE.
  */
 
-package me.schlaubi.intellij_gradle_version_checker.settings
+package me.schlaubi.intellij_gradle_version_checker.dependency_format
 
-import com.intellij.openapi.project.Project
-import me.schlaubi.intellij_gradle_version_checker.dependency_format.DependencyFormat
+import org.jetbrains.kotlin.psi.KtExpression
 
-val Project.projectDependencyFormat: DependencyFormat
-    get() = DependencyFormat.NotationDependencyFormat
+data class DependencyDeclaration(
+    val group: KtExpression,
+    val name: KtExpression,
+    val version: KtExpression?
+)

@@ -30,7 +30,7 @@ plugins {
 }
 
 group = "me.schlaubi"
-version = "2.0-SNAPSHOT"
+version = "2.0-RC1"
 
 repositories {
     mavenCentral()

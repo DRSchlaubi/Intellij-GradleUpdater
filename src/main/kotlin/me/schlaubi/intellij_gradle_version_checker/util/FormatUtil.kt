@@ -22,20 +22,14 @@
  * SOFTWARE.
  */
 
-package me.schlaubi.intellij_gradle_version_checker
+package me.schlaubi.intellij_gradle_version_checker.util
 
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.startup.StartupActivity
-import com.intellij.openapi.vcs.changes.shelf.ShelveChangesManager
-import kotlinx.coroutines.runBlocking
+import me.schlaubi.intellij_gradle_version_checker.dependency_format.DependencyFormat
+import me.schlaubi.intellij_gradle_version_checker.settings.ProjectPersistentGradleVersionSettings
 
-/**
- * [StartupActivity] fetching the latest Gradle version before running inspections.
- */
-class GradleVersionResolvingActivity : ShelveChangesManager.PostStartupActivity() {
-    override fun runActivity(project: Project) {
-        runBlocking {
-            fetchGradleVersion()
-        }
+val Project.dependencyFormat: DependencyFormat
+    get() {
+        val name = ProjectPersistentGradleVersionSettings.getInstance(this).dependencyFormat
+        return DependencyFormat.all.first { it::class.simpleName == name }
     }
-}

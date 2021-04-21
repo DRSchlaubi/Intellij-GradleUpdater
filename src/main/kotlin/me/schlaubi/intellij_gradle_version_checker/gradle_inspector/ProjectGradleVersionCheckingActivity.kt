@@ -22,10 +22,14 @@
  * SOFTWARE.
  */
 
-package me.schlaubi.intellij_gradle_version_checker
+package me.schlaubi.intellij_gradle_version_checker.gradle_inspector
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.changes.shelf.ShelvedChangesViewManager
+import me.schlaubi.intellij_gradle_version_checker.GradleVersion
+import me.schlaubi.intellij_gradle_version_checker.GradleVersionNotifier
+import me.schlaubi.intellij_gradle_version_checker.latestGradleVersion
+import me.schlaubi.intellij_gradle_version_checker.parseGradleVersion
 import me.schlaubi.intellij_gradle_version_checker.settings.ApplicationGradleVersionSettings
 import me.schlaubi.intellij_gradle_version_checker.settings.ProjectPersistentGradleVersionSettings
 import org.jetbrains.plugins.gradle.settings.GradleSettings

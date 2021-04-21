@@ -30,6 +30,7 @@ import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.project.Project
 import com.intellij.util.xmlb.XmlSerializerUtil
+import me.schlaubi.intellij_gradle_version_checker.dependency_format.DependencyFormat
 
 /**
  * Base class for persistent [GradleVersionSettings].
@@ -44,6 +45,8 @@ sealed class AbstractPersistentGradleVersionSettings<T : GradleVersionSettings> 
     override var ignoreOutdatedVersion = false
 
     override var alwaysConvertGroovy: Boolean = false
+
+    override var dependencyFormat: String = DependencyFormat.NotationDependencyFormat::class.simpleName ?: "<error>"
 
     @Suppress("UNCHECKED_CAST")
     override fun getState(): T = this as T
@@ -92,7 +95,8 @@ class ProjectPersistentGradleVersionSettings :
  */
 data class MemoryGradleVersionSettings(
     override var ignoreOutdatedVersion: Boolean = false,
-    override var alwaysConvertGroovy: Boolean = false
+    override var alwaysConvertGroovy: Boolean = false,
+    override var dependencyFormat: String = DependencyFormat.NotationDependencyFormat::class.simpleName ?: "<error>"
 ) : GradleVersionSettings {
     constructor(settings: GradleVersionSettings) : this(settings.ignoreOutdatedVersion)
 
@@ -119,6 +123,11 @@ interface GradleVersionSettings {
      * Whether to ask if Groovy should be converted to Kotlin.
      */
     var alwaysConvertGroovy: Boolean
+
+    /**
+     * The name of the dependency format which is supposed to match all dependencies.
+     */
+    var dependencyFormat: String
 
     /**
      * Creates a non-persistent copy of this instance.

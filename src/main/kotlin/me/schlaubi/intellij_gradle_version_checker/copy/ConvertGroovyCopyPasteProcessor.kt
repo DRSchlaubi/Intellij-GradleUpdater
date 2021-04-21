@@ -244,6 +244,7 @@ private fun confirmConversion(project: Project): Boolean {
 
 fun String.asNullable() = ifBlank { null }
 
+@Suppress("SpellCheckingInspection")
 val gradleOfficialPlugins = listOf(
     "project-report",
     "project-reports",

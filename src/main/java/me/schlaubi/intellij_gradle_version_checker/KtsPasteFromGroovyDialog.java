@@ -39,7 +39,7 @@ public class KtsPasteFromGroovyDialog extends DialogWrapper {
     private JCheckBox donTShowThisCheckBox;
     private JLabel questionLabel;
     private JButton buttonOK;
-    private Project project;
+    private final Project project;
 
     public KtsPasteFromGroovyDialog(@NotNull Project project) {
         super(project, true);

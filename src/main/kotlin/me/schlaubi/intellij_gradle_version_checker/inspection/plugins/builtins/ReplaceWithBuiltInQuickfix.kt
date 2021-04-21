@@ -22,21 +22,21 @@
  * SOFTWARE.
  */
 
-package me.schlaubi.intellij_gradle_version_checker.inspection.plugins
+package me.schlaubi.intellij_gradle_version_checker.inspection.plugins.builtins
 
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.openapi.project.Project
+import me.schlaubi.intellij_gradle_version_checker.GradleUpdaterBundle
 import org.jetbrains.kotlin.psi.KtPsiFactory
 
-class ReplaceWithKotlinQuickfix(private val id: String) : LocalQuickFix {
-    override fun getFamilyName(): String {
-        return "TODO("
-    }
+class ReplaceWithBuiltInQuickfix(private val id: String) : LocalQuickFix {
+    override fun getFamilyName(): String =
+        GradleUpdaterBundle.getMessage("inspection.built_in_plugin_with_id.quickfix.replace")
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
         val idCall = descriptor.psiElement
-        val builtInCall = KtPsiFactory(project).createExpression("""kotlin("$id")""")
+        val builtInCall = KtPsiFactory(project).createExpression(if ("-" in id) "`$id`" else id)
 
         idCall.replace(builtInCall)
     }

@@ -92,7 +92,7 @@
                 displayName="Gradle missusage"
                 groupKey="inspection.group.name"
                 enabledByDefault="true"
-                implementationClass="me.schlaubi.intellij_gradle_version_checker.inspection.plugins.KotlinPluginWithIdInspection"
+                implementationClass="me.schlaubi.intellij_gradle_version_checker.inspection.plugins.kotlin.KotlinPluginWithIdInspection"
         />
 
         <localInspection
@@ -100,9 +100,8 @@
                 displayName="Gradle missusage"
                 groupKey="inspection.group.name"
                 enabledByDefault="true"
-                implementationClass="me.schlaubi.intellij_gradle_version_checker.inspection.plugins.BuiltInPluginWithIdInspection"
+                implementationClass="me.schlaubi.intellij_gradle_version_checker.inspection.plugins.builtins.BuiltInPluginWithIdInspection"
         />
-
 
         <notificationGroup displayType="BALLOON"
                            id="me.schlaubi.intellij_gradle_version_checker.notifications.OutdatedVersion"

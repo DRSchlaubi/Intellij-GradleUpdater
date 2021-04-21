@@ -31,16 +31,16 @@ import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.lang.properties.psi.Property
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
-import me.schlaubi.intellij_gradle_version_checker.*
+import me.schlaubi.intellij_gradle_version_checker.GradleUpdaterBundle
+import me.schlaubi.intellij_gradle_version_checker.GradleVersion
+import me.schlaubi.intellij_gradle_version_checker.extractVersionFromDistributionUrlProperty
+import me.schlaubi.intellij_gradle_version_checker.latestGradleVersion
 
 /**
  * Inspection inspecting gradle-wrapper.properties for outdated Gradle version.
  * @see LocalInspectionTool
  */
 class GradleWrapperVersionInspection : LocalInspectionTool() {
-
-    override fun getStaticDescription(): String =
-        GradleUpdaterBundle.getMessage("inspection.outdated_version.static_description")
 
     override fun buildVisitor(
         holder: ProblemsHolder,

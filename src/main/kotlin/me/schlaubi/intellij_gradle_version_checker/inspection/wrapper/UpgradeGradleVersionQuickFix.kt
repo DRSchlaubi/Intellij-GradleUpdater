@@ -27,17 +27,9 @@ package me.schlaubi.intellij_gradle_version_checker.inspection.wrapper
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.lang.properties.psi.Property
-import com.intellij.lang.properties.psi.impl.PropertyImpl
-import com.intellij.lang.properties.psi.impl.PropertyValueImpl
 import com.intellij.openapi.project.Project
-import com.intellij.psi.impl.source.codeStyle.CodeEditUtil
 import me.schlaubi.intellij_gradle_version_checker.GradleUpdaterBundle
 import me.schlaubi.intellij_gradle_version_checker.replace
-import org.jetbrains.plugins.gradle.service.project.GradleProjectModel
-import org.jetbrains.plugins.gradle.service.project.GradleProjectResolverUtil
-import org.jetbrains.plugins.gradle.settings.GradleExtensionsSettings
-import org.jetbrains.plugins.gradle.settings.GradleProjectSettings
-import org.jetbrains.plugins.gradle.tooling.ModelBuilderService
 
 /**
  * Quickfix for [GradleWrapperVersionInspection] replacing the old version with the latest one.

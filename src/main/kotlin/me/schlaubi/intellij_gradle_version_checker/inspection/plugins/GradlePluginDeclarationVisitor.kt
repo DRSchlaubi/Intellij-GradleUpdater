@@ -24,13 +24,8 @@
 
 package me.schlaubi.intellij_gradle_version_checker.inspection.plugins
 
-import com.intellij.codeInspection.LocalInspectionTool
-import com.intellij.codeInspection.LocalInspectionToolSession
-import com.intellij.codeInspection.ProblemHighlightType
-import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
-import me.schlaubi.intellij_gradle_version_checker.copy.gradleOfficialPlugins
 import org.jetbrains.kotlin.nj2k.postProcessing.resolve
 import org.jetbrains.kotlin.psi.*
 
@@ -45,49 +40,6 @@ abstract class GradlePluginDeclarationVisitor : PsiElementVisitor() {
         val pluginId = element.extractPluginId() ?: return
 
         visitPluginId(element, pluginId)
-    }
-}
-
-class BuiltInPluginWithIdInspection : LocalInspectionTool() {
-    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
-        return object : GradlePluginDeclarationVisitor() {
-            override fun visitPluginId(element: PsiElement, pluginId: String) {
-                val gradleId = pluginId.substringAfter("org.gradle.")
-                if (gradleId != pluginId || pluginId in gradleOfficialPlugins) {
-                    holder.registerProblem(
-                        element,
-                        "Use built-in",
-                        ProblemHighlightType.WEAK_WARNING,
-                        ReplaceWithBuiltInQuickfix(gradleId)
-                    )
-                }
-            }
-        }
-    }
-}
-
-class KotlinPluginWithIdInspection : LocalInspectionTool() {
-
-    override fun buildVisitor(
-        holder: ProblemsHolder,
-        isOnTheFly: Boolean,
-        session: LocalInspectionToolSession
-    ): PsiElementVisitor {
-        if (session.file !is KtFile) return PsiElementVisitor.EMPTY_VISITOR
-
-        return object : GradlePluginDeclarationVisitor() {
-            override fun visitPluginId(element: PsiElement, pluginId: String) {
-                val kotlinModule = pluginId.substringAfter("org.jetbrains.kotlin.")
-                if (kotlinModule != pluginId) {
-                    holder.registerProblem(
-                        element,
-                        "use kotlin()",
-                        ProblemHighlightType.WEAK_WARNING,
-                        ReplaceWithKotlinQuickfix(kotlinModule)
-                    )
-                }
-            }
-        }
     }
 }
 

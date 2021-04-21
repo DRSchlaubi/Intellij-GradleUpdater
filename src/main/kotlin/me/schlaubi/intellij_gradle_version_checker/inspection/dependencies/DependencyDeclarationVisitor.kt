@@ -51,7 +51,6 @@ abstract class DependencyDeclarationVisitor(private val ignoreConfigurations: Bo
         }
 
         if (element.isDependencyDeclaration()) {
-            println("Is declar: ${element.text}")
             visitDependencyDeclaration(element)
         }
     }

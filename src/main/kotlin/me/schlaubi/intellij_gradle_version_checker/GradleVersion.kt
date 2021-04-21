@@ -45,8 +45,8 @@ import kotlinx.serialization.encoding.Encoder
 lateinit var latestGradleVersion: GithubGradleVersion
     private set
 
-// https://regex101.com/r/oVpaYd/1/
-private val gradleVersionPattern = """((?:[0-9])+)\.((?:[0-9])+)(?:\.((?:[0-9])+))?""".toRegex()
+// https://regex101.com/r/oVpaYd/2
+private val gradleVersionPattern = """([0-9]+)\.([0-9]+)(?:\.([0-9]+))?""".toRegex()
 private const val latestGradleVersionEndpoint = "https://api.github.com/repos/gradle/gradle/releases/latest"
 private val httpClient = HttpClient {
     install(JsonFeature) {
@@ -112,7 +112,9 @@ data class GithubGradleVersion(
     @SerialName("name")
     val gradleVersion: GradleVersion,
     val draft: Boolean,
-    val prerelease: Boolean,
+    @Suppress("SpellCheckingInspection")
+    @SerialName("prerelease")
+    val preRelease: Boolean,
     @SerialName("created_at")
     val createdAt: String,
     @SerialName("published_at")

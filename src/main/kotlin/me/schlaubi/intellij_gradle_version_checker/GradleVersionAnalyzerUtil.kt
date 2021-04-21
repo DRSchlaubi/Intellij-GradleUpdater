@@ -30,7 +30,7 @@ package me.schlaubi.intellij_gradle_version_checker
 fun extractVersionFromDistributionUrlProperty(property: String): GradleVersion? {
     val fileName = property.substringAfterLast('/') // /gradle-6.3-bin.zip
     val version = fileName.substringAfter("gradle-").substringBefore(".zip")
-    val (versionName, /* type */) = version.split("-")
+    val (versionName /*, type */) = version.split("-")
 
     return versionName.parseGradleVersion()
 }

@@ -27,7 +27,7 @@ package me.schlaubi.intellij_gradle_version_checker.inspection.dependencies
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.util.PsiTreeUtil
-import me.schlaubi.intellij_gradle_version_checker.calleeFunction
+import me.schlaubi.intellij_gradle_version_checker.util.calleeFunction
 import org.jetbrains.kotlin.descriptors.PropertyDescriptor
 import org.jetbrains.kotlin.idea.refactoring.fqName.fqName
 import org.jetbrains.kotlin.idea.references.resolveMainReferenceToDescriptors

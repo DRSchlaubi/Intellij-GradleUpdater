@@ -22,10 +22,13 @@
  * SOFTWARE.
  */
 
-package me.schlaubi.intellij_gradle_version_checker.inspection
+package me.schlaubi.intellij_gradle_version_checker.util
 
 import com.intellij.openapi.externalSystem.autoimport.ExternalSystemProjectTracker
 import com.intellij.openapi.project.Project
 
+/**
+ * Invokes a IntelliJ Gradle sync.
+ */
 @Suppress("UnstableApiUsage")
 fun Project.refreshGradle() = ExternalSystemProjectTracker.getInstance(this).scheduleProjectRefresh()

@@ -30,7 +30,6 @@ import me.schlaubi.intellij_gradle_version_checker.GradleVersion
 import me.schlaubi.intellij_gradle_version_checker.GradleVersionNotifier
 import me.schlaubi.intellij_gradle_version_checker.latestGradleVersion
 import me.schlaubi.intellij_gradle_version_checker.parseGradleVersion
-import me.schlaubi.intellij_gradle_version_checker.settings.ApplicationGradleVersionSettings
 import me.schlaubi.intellij_gradle_version_checker.settings.ProjectPersistentGradleVersionSettings
 import org.jetbrains.plugins.gradle.settings.GradleSettings
 import org.gradle.util.GradleVersion as GGradleVersion
@@ -42,7 +41,7 @@ import org.gradle.util.GradleVersion as GGradleVersion
 class ProjectGradleVersionCheckingActivity : ShelvedChangesViewManager.PostStartupActivity() {
 
     override fun runActivity(project: Project) {
-        if (ApplicationGradleVersionSettings.ignoreOutdatedVersion || ProjectPersistentGradleVersionSettings.getInstance(
+        if (ProjectPersistentGradleVersionSettings.getInstance(
                 project
             ).ignoreOutdatedVersion
         ) return

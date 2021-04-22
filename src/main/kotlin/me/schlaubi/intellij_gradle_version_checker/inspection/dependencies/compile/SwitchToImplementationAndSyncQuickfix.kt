@@ -27,7 +27,7 @@ package me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.comp
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.openapi.project.Project
 import me.schlaubi.intellij_gradle_version_checker.GradleUpdaterBundle
-import me.schlaubi.intellij_gradle_version_checker.inspection.refreshGradle
+import me.schlaubi.intellij_gradle_version_checker.util.refreshGradle
 
 object SwitchToImplementationAndSyncQuickfix : SwitchToImplementationQuickfix() {
 

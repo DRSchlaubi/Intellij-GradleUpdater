@@ -1,4 +1,4 @@
-package me.schlaubi.intellij_gradle_version_checker
+package me.schlaubi.intellij_gradle_version_checker.util
 
 import com.intellij.lang.properties.IProperty
 import com.intellij.lang.properties.psi.PropertiesResourceBundleUtil

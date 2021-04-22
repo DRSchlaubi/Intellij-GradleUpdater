@@ -39,6 +39,8 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
 import me.schlaubi.intellij_gradle_version_checker.KtsPasteFromGroovyDialog
+import me.schlaubi.intellij_gradle_version_checker.settings.ProjectPersistentGradleVersionSettings
+import me.schlaubi.intellij_gradle_version_checker.util.dependencyFormat
 import org.jetbrains.kotlin.KtNodeTypes
 import org.jetbrains.kotlin.idea.caches.resolve.resolveImportReference
 import org.jetbrains.kotlin.idea.formatter.commitAndUnblockDocument
@@ -50,6 +52,7 @@ import org.jetbrains.kotlin.psi.KtPsiFactory
 import org.jetbrains.kotlin.psi.psiUtil.elementsInRange
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.Transferable
+import me.schlaubi.intellij_gradle_version_checker.dependency_format.DependencyDeclaration as ExpressionDependencyDeclaration
 
 // https://regex101.com/r/kZ258U/5
 private val DEPENDENCY_DECLARATION_REGEX =
@@ -132,7 +135,8 @@ class ConvertGroovyCopyPasteProcessor : CopyPastePostProcessor<TextBlockTransfer
 
         if (!confirmConversion(project)) return
 
-        end = items.replace(editor.document, bounds.startOffset)
+        val psiFactory = KtPsiFactory(project)
+        end = items.replace(project, psiFactory, editor.document, bounds.startOffset)
 
         if (items.isNotEmpty()) {
             targetFile.commitAndUnblockDocument() // commit original changes to not re migrate "/'
@@ -141,7 +145,7 @@ class ConvertGroovyCopyPasteProcessor : CopyPastePostProcessor<TextBlockTransfer
         runWriteAction {
             singleQuoteStrings.forEach {
                 it.replace(
-                    KtPsiFactory(project).createStringTemplate(
+                    psiFactory.createStringTemplate(
                         it.text.substring(
                             1,
                             it.text.length - 1
@@ -154,12 +158,16 @@ class ConvertGroovyCopyPasteProcessor : CopyPastePostProcessor<TextBlockTransfer
 }
 
 private fun <T : Migratable> List<T>.replace(
+    project: Project,
+    psiFactory: KtPsiFactory,
     document: Document,
     start: Int,
 ) = runWriteAction {
     fold(start) { startOffset, item ->
         val range = item.range
-        val migrated = item.migrateString()
+        val migrated = with(item) {
+            project.migrateString(psiFactory)
+        }
         val offset = migrated.length - (range.last - range.first)
         val realRange = range.withOffset(startOffset)
 
@@ -175,7 +183,7 @@ private fun <T : Migratable> List<T>.replace(
 
 interface Migratable {
     val range: IntRange
-    fun migrateString(): String
+    fun Project.migrateString(factory: KtPsiFactory): String
 }
 
 private data class DependencyDeclaration(
@@ -185,7 +193,12 @@ private data class DependencyDeclaration(
     val version: String?,
     override val range: IntRange
 ) : Migratable {
-    override fun migrateString(): String = """$config("$group:$artifact${version?.let { ":$version" } ?: ""}")"""
+    override fun Project.migrateString(factory: KtPsiFactory): String {
+        val expressionDeclaration = ExpressionDependencyDeclaration(factory, group, artifact, version)
+        val arguments = with(dependencyFormat) { expressionDeclaration.generateArguments(factory) }
+
+        return "$config${arguments.text}"
+    }
 
     companion object {
         fun fromMatch(match: MatchResult): DependencyDeclaration {
@@ -199,7 +212,7 @@ private data class DependencyDeclaration(
 
 private data class PluginDeclaration(val id: String, val version: String?, override val range: IntRange) :
     Migratable {
-    override fun migrateString(): String {
+    override fun Project.migrateString(factory: KtPsiFactory): String {
         return if (id in gradleOfficialPlugins) {
             if ("-" in id) {
                 "`$id`"
@@ -236,6 +249,7 @@ private fun Iterable<MatchResult>.mapToDependencies() = map(DependencyDeclaratio
 private fun Iterable<MatchResult>.mapToPlugins() = map(PluginDeclaration::fromMatch)
 
 private fun confirmConversion(project: Project): Boolean {
+    if (ProjectPersistentGradleVersionSettings.getInstance(project).alwaysConvertGroovy) return true
     val dialog =
         KtsPasteFromGroovyDialog(project)
     dialog.show()

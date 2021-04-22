@@ -33,7 +33,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
 import me.schlaubi.intellij_gradle_version_checker.GradleUpdaterBundle
 import me.schlaubi.intellij_gradle_version_checker.GradleVersion
-import me.schlaubi.intellij_gradle_version_checker.extractVersionFromDistributionUrlProperty
+import me.schlaubi.intellij_gradle_version_checker.util.extractVersionFromDistributionUrlProperty
 import me.schlaubi.intellij_gradle_version_checker.latestGradleVersion
 
 /**

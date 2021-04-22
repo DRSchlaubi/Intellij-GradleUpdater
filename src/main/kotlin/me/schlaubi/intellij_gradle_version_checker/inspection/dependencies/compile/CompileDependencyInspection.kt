@@ -30,7 +30,7 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElementVisitor
 import me.schlaubi.intellij_gradle_version_checker.GradleUpdaterBundle
-import me.schlaubi.intellij_gradle_version_checker.calleeFunction
+import me.schlaubi.intellij_gradle_version_checker.util.calleeFunction
 import me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.DependencyDeclarationVisitor
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.stubs.KotlinFunctionStub

@@ -22,22 +22,31 @@
  * SOFTWARE.
  */
 
-package me.schlaubi.intellij_gradle_version_checker
+package me.schlaubi.intellij_gradle_version_checker.util
 
 import org.jetbrains.kotlin.psi.KtPsiFactory
 import org.jetbrains.kotlin.psi.KtStringTemplateEntry
 import org.jetbrains.kotlin.psi.KtStringTemplateExpression
 
+/**
+ * Whether this is a plain string or a interpolation template.
+ */
 fun KtStringTemplateExpression.isSimple() = entries.size == 1
 
+/**
+ * Returns the value of a string without interpolation
+ */
 val KtStringTemplateExpression.simpleValue
     get() = entries.first().value
 
+/**
+ * The value of a string template entry
+ */
 val KtStringTemplateEntry.value
     get() = text.removeSurrounding("\"")
 
-fun String.toPsiTemplateEntry(factory: KtPsiFactory): KtStringTemplateEntry =
-    factory.createLiteralStringTemplateEntry(this)
-
+/**
+ * Converts a [String] into a [KtStringTemplateExpression].
+ */
 fun String.toPsiTemplate(factory: KtPsiFactory): KtStringTemplateExpression =
     factory.createStringTemplate(this)

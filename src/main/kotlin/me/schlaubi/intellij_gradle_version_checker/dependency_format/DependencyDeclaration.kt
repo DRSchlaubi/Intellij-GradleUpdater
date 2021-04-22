@@ -24,8 +24,29 @@
 
 package me.schlaubi.intellij_gradle_version_checker.dependency_format
 
+import me.schlaubi.intellij_gradle_version_checker.util.toPsiTemplate
 import org.jetbrains.kotlin.psi.KtExpression
+import org.jetbrains.kotlin.psi.KtPsiFactory
 
+/**
+ * Creates a [DependencyDeclaration] from strings of [group], [name] and [version].
+ *
+ * @param factory the [KtPsiFactory] to create psi elements
+ */
+fun DependencyDeclaration(
+    factory: KtPsiFactory,
+    group: String,
+    name: String,
+    version: String? = null
+) = DependencyDeclaration(group.toPsiTemplate(factory), name.toPsiTemplate(factory), version?.toPsiTemplate(factory))
+
+/**
+ * Representation of a Gradle dependency declaration.
+ *
+ * @property group the [KtExpression] representing the group
+ * @property name the [KtExpression] representing the name
+ * @property version the [KtExpression] representing the version
+ */
 data class DependencyDeclaration(
     val group: KtExpression,
     val name: KtExpression,

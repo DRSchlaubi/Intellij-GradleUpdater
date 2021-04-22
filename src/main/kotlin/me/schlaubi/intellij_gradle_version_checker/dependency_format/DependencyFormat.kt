@@ -24,10 +24,10 @@
 
 package me.schlaubi.intellij_gradle_version_checker.dependency_format
 
-import me.schlaubi.intellij_gradle_version_checker.calleeFunction
-import me.schlaubi.intellij_gradle_version_checker.isSimple
-import me.schlaubi.intellij_gradle_version_checker.simpleValue
-import me.schlaubi.intellij_gradle_version_checker.toPsiTemplate
+import me.schlaubi.intellij_gradle_version_checker.util.calleeFunction
+import me.schlaubi.intellij_gradle_version_checker.util.isSimple
+import me.schlaubi.intellij_gradle_version_checker.util.simpleValue
+import me.schlaubi.intellij_gradle_version_checker.util.toPsiTemplate
 import org.jetbrains.kotlin.idea.refactoring.fqName.fqName
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.nj2k.postProcessing.type

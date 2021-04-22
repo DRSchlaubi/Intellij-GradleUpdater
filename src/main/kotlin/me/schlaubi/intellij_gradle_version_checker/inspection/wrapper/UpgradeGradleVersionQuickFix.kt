@@ -29,7 +29,7 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.lang.properties.psi.Property
 import com.intellij.openapi.project.Project
 import me.schlaubi.intellij_gradle_version_checker.GradleUpdaterBundle
-import me.schlaubi.intellij_gradle_version_checker.replace
+import me.schlaubi.intellij_gradle_version_checker.util.replace
 
 /**
  * Quickfix for [GradleWrapperVersionInspection] replacing the old version with the latest one.

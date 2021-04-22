@@ -36,6 +36,8 @@ import com.intellij.psi.PsiManager
 import me.schlaubi.intellij_gradle_version_checker.inspection.wrapper.GradleWrapperVersionInspection
 import me.schlaubi.intellij_gradle_version_checker.settings.ApplicationGradleVersionSettings
 import me.schlaubi.intellij_gradle_version_checker.settings.ProjectPersistentGradleVersionSettings
+import me.schlaubi.intellij_gradle_version_checker.util.extractVersionFromDistributionUrlProperty
+import me.schlaubi.intellij_gradle_version_checker.util.replace
 
 /**
  * Utility class to invoke Plugin notifications.

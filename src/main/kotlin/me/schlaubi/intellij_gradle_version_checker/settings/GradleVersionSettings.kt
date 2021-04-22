@@ -30,6 +30,7 @@ import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.project.Project
 import com.intellij.util.xmlb.XmlSerializerUtil
+import com.intellij.util.xmlb.annotations.Transient
 import me.schlaubi.intellij_gradle_version_checker.dependency_format.DependencyFormat
 
 /**
@@ -83,6 +84,13 @@ class ApplicationPersistentGradleVersionSettings :
 )
 class ProjectPersistentGradleVersionSettings :
     AbstractPersistentGradleVersionSettings<ProjectPersistentGradleVersionSettings>() {
+    @Transient
+    private val parent = ApplicationGradleVersionSettings
+    
+    override var ignoreOutdatedVersion: Boolean = parent.ignoreOutdatedVersion
+    override var alwaysConvertGroovy: Boolean = parent.alwaysConvertGroovy
+    override var dependencyFormat: String = parent.dependencyFormat
+
     companion object {
         @JvmStatic
         fun getInstance(project: Project): GradleVersionSettings =

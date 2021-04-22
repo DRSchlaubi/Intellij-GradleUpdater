@@ -28,6 +28,9 @@ import com.intellij.openapi.project.Project
 import me.schlaubi.intellij_gradle_version_checker.dependency_format.DependencyFormat
 import me.schlaubi.intellij_gradle_version_checker.settings.ProjectPersistentGradleVersionSettings
 
+/**
+ * Retrieves the dependency format set for this [Project].
+ */
 val Project.dependencyFormat: DependencyFormat
     get() {
         val name = ProjectPersistentGradleVersionSettings.getInstance(this).dependencyFormat

@@ -24,21 +24,23 @@
 
 package me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.inconstant_format
 
-import com.intellij.codeInspection.LocalInspectionTool
 import com.intellij.codeInspection.LocalInspectionToolSession
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElementVisitor
 import me.schlaubi.intellij_gradle_version_checker.dependency_format.dependencyFormat
+import me.schlaubi.intellij_gradle_version_checker.inspection.AbstractBuildScriptInspection
 import me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.DependencyDeclarationVisitor
 import me.schlaubi.intellij_gradle_version_checker.util.dependencyFormat
 import org.jetbrains.kotlin.psi.KtCallExpression
+import org.jetbrains.kotlin.psi.KtFile
 
-class InconstantFormatInspection : LocalInspectionTool() {
+class InconstantFormatInspection : AbstractBuildScriptInspection() {
 
     override fun buildVisitor(
         holder: ProblemsHolder,
-        isOnTheFly: Boolean,
-        session: LocalInspectionToolSession
+        onTheFly: Boolean,
+        session: LocalInspectionToolSession,
+        file: KtFile
     ): PsiElementVisitor {
         return object : DependencyDeclarationVisitor(false) {
             override fun visitDependencyDeclaration(element: KtCallExpression) {

@@ -22,23 +22,25 @@
  * SOFTWARE.
  */
 
-package me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.compile
+package me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.kotlin.redundant_version
 
 import com.intellij.codeInspection.LocalInspectionToolSession
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElementVisitor
-import me.schlaubi.intellij_gradle_version_checker.GradleUpdaterBundle
+import com.intellij.psi.SmartPointerManager
 import me.schlaubi.intellij_gradle_version_checker.inspection.AbstractBuildScriptInspection
 import me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.DependencyDeclarationVisitor
 import me.schlaubi.intellij_gradle_version_checker.util.calleeFunction
+import me.schlaubi.intellij_gradle_version_checker.util.isSimple
+import me.schlaubi.intellij_gradle_version_checker.util.simpleValue
+import org.jetbrains.kotlin.idea.inspections.gradle.getResolvedKotlinGradleVersion
+import org.jetbrains.kotlin.idea.util.module
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtFile
-import org.jetbrains.kotlin.psi.KtTypeParameterListOwnerStub
-import org.jetbrains.kotlin.psi.stubs.KotlinFunctionStub
+import org.jetbrains.kotlin.psi.KtStringTemplateExpression
 
-class CompileDependencyInspection : AbstractBuildScriptInspection() {
-
+class RedundantVersionInspection : AbstractBuildScriptInspection() {
     override fun buildVisitor(
         holder: ProblemsHolder,
         onTheFly: Boolean,
@@ -46,26 +48,29 @@ class CompileDependencyInspection : AbstractBuildScriptInspection() {
         file: KtFile
     ): PsiElementVisitor {
         return object : DependencyDeclarationVisitor(true) {
-            override fun visitDependencyDeclaration(element: KtCallExpression) { if (!element.isDeprecatedDependencyDeclaration()) return
+            override fun visitDependencyDeclaration(element: KtCallExpression) {
+                val call = element.valueArguments.first().firstChild as? KtCallExpression ?: return
+                val callee = call.calleeFunction ?: return
+                if (callee.fqName?.asString() != "org.gradle.kotlin.dsl.kotlin") return
 
-                holder.registerProblem(
-                    element,
-                    GradleUpdaterBundle.getMessage("inspection.deprecated_dependency_config.description"),
-                    ProblemHighlightType.WARNING,
-                    SwitchToImplementationQuickfix,
-                    SwitchToImplementationAndSyncQuickfix
-                )
+                val version = call.valueArguments.getOrNull(1) ?: return
+                val string = version.firstChild as? KtStringTemplateExpression ?: return
+                if (!string.isSimple()) return
+
+                val module = element.module ?: return
+                if (string.simpleValue == getResolvedKotlinGradleVersion(module)) {
+                    val argumentsPointer = SmartPointerManager.createPointer(call.valueArgumentList!!)
+                    val argumentPointer = SmartPointerManager.createPointer(version)
+                    holder.registerProblem(
+                        string,
+                        "Unnötig",
+                        ProblemHighlightType.LIKE_UNUSED_SYMBOL,
+                        RemoveRedundantVersionQuickfix(
+                            argumentsPointer, argumentPointer
+                        )
+                    )
+                }
             }
         }
     }
-}
-
-private fun KtTypeParameterListOwnerStub<KotlinFunctionStub>.isDeprecated() =
-    annotationEntries.any { it.shortName?.asString() == "Deprecated" }
-
-private fun KtCallExpression.isDeprecatedDependencyDeclaration(): Boolean {
-    val function = calleeFunction ?: return false
-
-    return function.isDeprecated() // Only complain if a Gradle version which actually deprecates this is used
-            && function.name == "compile"
 }

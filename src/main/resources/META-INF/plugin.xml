@@ -63,8 +63,9 @@
                 id="me.schlaubi.intellij_gradle_version_checker.settings.ProjectGradleVersionSettingsConfigurable"
                 displayName="Project Settings"/>
 
-        <postStartupActivity implementation="me.schlaubi.intellij_gradle_version_checker.gradle_inspector.GradleVersionResolvingActivity"
-                             id="me.schlaubi.intellij_gradle_version_checker.gradle_inspector.GradleVersionResolvingActivity"/>
+        <postStartupActivity
+                implementation="me.schlaubi.intellij_gradle_version_checker.gradle_inspector.GradleVersionResolvingActivity"
+                id="me.schlaubi.intellij_gradle_version_checker.gradle_inspector.GradleVersionResolvingActivity"/>
         <postStartupActivity
                 implementation="me.schlaubi.intellij_gradle_version_checker.gradle_inspector.ProjectGradleVersionCheckingActivity"
                 order="after me.schlaubi.intellij_gradle_version_checker.gradle_inspector.GradleVersionResolvingActivity"/>
@@ -109,6 +110,30 @@
                 groupKey="inspection.group.name"
                 enabledByDefault="true"
                 implementationClass="me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.inconstant_format.InconstantFormatInspection"
+        />
+
+        <localInspection
+                language="kotlin"
+                displayName="Gradle missusage"
+                groupKey="inspection.group.name"
+                enabledByDefault="true"
+                implementationClass="me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.kotlin.unnecessary_coordinates.KotlinInspectionWithCoordinatesInspection"
+        />
+
+        <localInspection
+                language="kotlin"
+                displayName="Gradle missusage"
+                groupKey="inspection.group.name"
+                enabledByDefault="true"
+                implementationClass="me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.kotlin.redundant_version.RedundantVersionInspection"
+        />
+
+        <localInspection
+                language="kotlin"
+                displayName="Gradle missusage"
+                groupKey="inspection.group.name"
+                enabledByDefault="true"
+                implementationClass="me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.kotlin.stdlib.DependencyOnStdlibInspection"
         />
 
         <notificationGroup displayType="BALLOON"

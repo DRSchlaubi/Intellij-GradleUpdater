@@ -47,10 +47,15 @@ class ProjectGradleVersionCheckingActivity : ShelvedChangesViewManager.PostStart
         ) return
         val gradleSettings = GradleSettings.getInstance(project).getLinkedProjectSettings(project.basePath!!) ?: return
 
+
         if (gradleSettings.distributionType?.isWrapped == false) return
         val currentGradleVersion = gradleSettings.resolveGradleVersion().asGradleVersion()
-        if (latestGradleVersion.gradleVersion > currentGradleVersion) {
-            GradleVersionNotifier.notifyOutdated(project)
+        try {
+            if (latestGradleVersion.gradleVersion > currentGradleVersion) {
+                GradleVersionNotifier.notifyOutdated(project)
+            }
+        } catch (ignored: UninitializedPropertyAccessException) {
+            // if you install without restarting GradleVersionResolvingActivity doesn't run for whatever reason
         }
     }
 }

@@ -22,35 +22,22 @@
  * SOFTWARE.
  */
 
-package me.schlaubi.intellij_gradle_version_checker.util
+package me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.kotlin.redundant_version
 
-import org.jetbrains.kotlin.psi.KtPsiFactory
-import org.jetbrains.kotlin.psi.KtStringTemplateEntry
-import org.jetbrains.kotlin.psi.KtStringTemplateExpression
+import com.intellij.codeInspection.LocalQuickFix
+import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.openapi.project.Project
+import com.intellij.psi.SmartPsiElementPointer
+import org.jetbrains.kotlin.psi.KtValueArgument
+import org.jetbrains.kotlin.psi.KtValueArgumentList
 
-/**
- * Whether this is a plain string or a interpolation template.
- */
-fun KtStringTemplateExpression.isSimple() = entries.size == 1
+class RemoveRedundantVersionQuickfix(
+    private val arguments: SmartPsiElementPointer<KtValueArgumentList>,
+    private val argument: SmartPsiElementPointer<KtValueArgument>
+) : LocalQuickFix {
+    override fun getFamilyName(): String = "remove"
 
-/**
- * Returns the value of a string without interpolation
- */
-val KtStringTemplateExpression.simpleValue
-    get() = entries.first().value
-
-/**
- * The value of a string template entry
- */
-val KtStringTemplateEntry.value
-    get() = text.removeSurrounding("\"")
-
-/**
- * Converts a [String] into a [KtStringTemplateExpression].
- */
-fun String.toPsiTemplate(factory: KtPsiFactory): KtStringTemplateExpression =
-    factory.createStringTemplate(this)
-
-fun KtStringTemplateExpression.equalsString(string: String) = isSimple() && simpleValue == string
-
-fun KtStringTemplateExpression.startsWith(prefix: String) = isSimple() && simpleValue.startsWith(prefix)
+    override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+        argument.element?.let { argument -> arguments.element?.removeArgument(argument) }
+    }
+}

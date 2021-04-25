@@ -28,7 +28,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.util.PsiTreeUtil
 import me.schlaubi.intellij_gradle_version_checker.util.calleeFunction
-import org.jetbrains.kotlin.descriptors.PropertyDescriptor
+import org.jetbrains.kotlin.descriptors.VariableDescriptor
 import org.jetbrains.kotlin.idea.refactoring.fqName.fqName
 import org.jetbrains.kotlin.idea.references.resolveMainReferenceToDescriptors
 import org.jetbrains.kotlin.idea.util.module
@@ -60,7 +60,7 @@ abstract class DependencyDeclarationVisitor(private val ignoreConfigurations: Bo
     private fun KtCallExpression.isDependencyDeclaration(): Boolean {
         val callee = calleeFunction
         if (callee == null) { // Custom declarations
-            val descriptor = calleeExpression?.resolveMainReferenceToDescriptors()?.firstOrNull() as? PropertyDescriptor
+            val descriptor = calleeExpression?.resolveMainReferenceToDescriptors()?.firstOrNull() as? VariableDescriptor
                 ?: return false
 
             return descriptor.type.fqName?.asString() == "org.gradle.api.artifacts.Configuration"

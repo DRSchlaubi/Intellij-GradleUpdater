@@ -25,8 +25,8 @@
 plugins {
     java
     id("org.jetbrains.intellij") version "0.7.2"
-    kotlin("jvm") version "1.4.32"
-    kotlin("plugin.serialization") version "1.4.32"
+    kotlin("jvm") version "1.5.0"
+    kotlin("plugin.serialization") version "1.5.0"
 }
 
 group = "me.schlaubi"
@@ -38,6 +38,7 @@ repositories {
 
 dependencies {
     implementation("org.jetbrains.kotlinx", "kotlinx-serialization-json", "1.1.0")
+    implementation("io.sentry", "sentry", "4.3.0")
 
     implementation(platform("io.ktor:ktor-bom:1.5.3"))
     implementation("io.ktor", "ktor-client-okhttp")

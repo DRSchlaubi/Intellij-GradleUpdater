@@ -64,6 +64,9 @@
                 displayName="Project Settings"/>
 
         <postStartupActivity
+                implementation="me.schlaubi.intellij_gradle_version_checker.error_handling.InitializeSentryActivity"
+                order="before me.schlaubi.intellij_gradle_version_checker.gradle_inspector.GradleVersionResolvingActivity"/>
+        <postStartupActivity
                 implementation="me.schlaubi.intellij_gradle_version_checker.gradle_inspector.GradleVersionResolvingActivity"
                 id="me.schlaubi.intellij_gradle_version_checker.gradle_inspector.GradleVersionResolvingActivity"/>
         <postStartupActivity
@@ -139,5 +142,7 @@
         <notificationGroup displayType="BALLOON"
                            id="me.schlaubi.intellij_gradle_version_checker.notifications.OutdatedVersion"
                            key="notification.group.title"/>
+
+        <errorHandler implementation="me.schlaubi.intellij_gradle_version_checker.error_handling.SentryErrorHandler"/>
     </extensions>
 </idea-plugin>

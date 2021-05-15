@@ -45,7 +45,6 @@ class InconstantFormatInspection : AbstractBuildScriptInspection() {
         return object : DependencyDeclarationVisitor(false) {
             override fun visitDependencyDeclaration(element: KtCallExpression) {
                 val elementFormat = element.dependencyFormat ?: return
-
                 if (elementFormat != element.project.dependencyFormat) {
                     val convertible = with(elementFormat) {
                         element.isConvertible()

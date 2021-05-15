@@ -94,7 +94,7 @@ sealed class DependencyFormat {
         override fun KtCallExpression.isConvertible(): Boolean {
             val template = valueArguments.first().firstChild as? KtStringTemplateExpression ?: return false
             // No interpolation = we can just split at ":"
-            if (!template.hasInterpolation()) return template.simpleValue.count { it == ':' } >= 2
+            if (!template.hasInterpolation()) return template.simpleValue.count { it == ':' } >= 1
 
             // Jetbrains and their cool dataflow analysis could probably analyze what all the string templates mean
             // and guess how to convert it but I am not JetBrains and I am lazy so you either do "group:name:$version"

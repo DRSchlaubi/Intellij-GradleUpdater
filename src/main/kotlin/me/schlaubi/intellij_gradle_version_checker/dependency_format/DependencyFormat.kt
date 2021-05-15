@@ -57,7 +57,7 @@ sealed class DependencyFormat {
      * @see DependencyDeclaration
      * @throws IllegalArgumentException if [isConvertible] returns falls for this [KtCallExpression]
      */
-    fun KtCallExpression.extractComponents(): DependencyDeclaration {
+    fun KtCallExpression.extractComponents(): DependencyDeclaration? {
         require(isConvertible()) { "Component needs to be convertible" }
 
         return extractComponentsInternally()
@@ -67,7 +67,7 @@ sealed class DependencyFormat {
      * Extracts all of the components of this call into a [DependencyDeclaration].
      * this implies that [isConvertible] already returned true
      */
-    protected abstract fun KtCallExpression.extractComponentsInternally(): DependencyDeclaration
+    protected abstract fun KtCallExpression.extractComponentsInternally(): DependencyDeclaration?
 
     /**
      * Generates a [KtValueArgumentList] needed to declare [DependencyDeclaration] in this format.
@@ -214,7 +214,7 @@ sealed class DependencyFormat {
         // since all of the above are separate arguments here we can neglect that
         override fun KtCallExpression.isConvertible(): Boolean = true
 
-        override fun KtCallExpression.extractComponentsInternally(): DependencyDeclaration = extractNamedDeclaration()
+        override fun KtCallExpression.extractComponentsInternally(): DependencyDeclaration? = extractNamedDeclaration()
         override fun DependencyDeclaration.generateArguments(factory: KtPsiFactory): KtValueArgumentList {
             return factory.buildValueArgumentList {
                 appendFixedText("(")
@@ -255,7 +255,7 @@ sealed class DependencyFormat {
             return namedArguments != 0 && namedArguments != valueArguments.size // at least one but not all
         }
 
-        override fun KtCallExpression.extractComponentsInternally(): DependencyDeclaration = extractNamedDeclaration()
+        override fun KtCallExpression.extractComponentsInternally(): DependencyDeclaration? = extractNamedDeclaration()
         override fun DependencyDeclaration.generateArguments(factory: KtPsiFactory): KtValueArgumentList =
             throw UnsupportedOperationException("This format is read-only")
     }
@@ -288,10 +288,10 @@ sealed class DependencyFormat {
     }
 }
 
-private fun KtCallExpression.extractNamedDeclaration(): DependencyDeclaration {
+private fun KtCallExpression.extractNamedDeclaration(): DependencyDeclaration? {
     // Figure out which parameter is for which argument
     val arguments = valueArguments.associateBy {
-        it.getArgumentName()!!.asName.asString()
+        it.getArgumentName()?.asName?.asString() ?: return null
     }
 
     return DependencyDeclaration(

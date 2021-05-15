@@ -68,7 +68,7 @@ class DependencyOnStdlibInspection : AbstractBuildScriptInspection() {
                 val name = if (format != null) {
                     with(format) {
                         if (element.isConvertible()) {
-                            val components = element.extractComponents()
+                            val components = element.extractComponents() ?: return@with null
                             val expression = components.name as? KtStringTemplateExpression ?: return
                             if (expression.isSimple()) {
                                 expression.simpleValue

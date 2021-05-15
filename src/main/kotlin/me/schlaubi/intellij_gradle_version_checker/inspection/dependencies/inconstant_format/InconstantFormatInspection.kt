@@ -27,15 +27,18 @@ package me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.inco
 import com.intellij.codeInspection.LocalInspectionToolSession
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElementVisitor
+import me.schlaubi.intellij_gradle_version_checker.GradleUpdaterBundle
 import me.schlaubi.intellij_gradle_version_checker.dependency_format.dependencyFormat
 import me.schlaubi.intellij_gradle_version_checker.inspection.AbstractBuildScriptInspection
 import me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.DependencyDeclarationVisitor
+import me.schlaubi.intellij_gradle_version_checker.settings.ProjectPersistentGradleVersionSettings
 import me.schlaubi.intellij_gradle_version_checker.util.dependencyFormat
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtFile
 
 class InconstantFormatInspection : AbstractBuildScriptInspection() {
 
+    @OptIn(ExperimentalStdlibApi::class)
     override fun buildVisitor(
         holder: ProblemsHolder,
         onTheFly: Boolean,
@@ -49,26 +52,36 @@ class InconstantFormatInspection : AbstractBuildScriptInspection() {
                     val convertible = with(elementFormat) {
                         element.isConvertible()
                     }
-                    val pair = with(elementFormat) {
+                    val declaration = with(elementFormat) {
                         if (convertible) {
-                            val extracted = element.extractComponents()
-                            val (group, name, version) = extracted
+                            val extracted = element.extractComponents() ?: return@with null
 
-                            "${group.text}:${name.text}:${version?.text}" to extracted
+                            extracted
                         } else {
                             null
                         }
                     }
-                    if (convertible) {
-                        val (extracted, declaration) = pair!!
-                        holder.registerProblem(
-                            element,
-                            "Extract: $extracted",
-                            ReplaceBySelectedFormatQuickFix(element, declaration)
-                        )
-                    } else {
-                        holder.registerProblem(element, "LOL")
+
+                    val quickFixes = buildList(2) {
+                        if (declaration != null) {
+                            if (convertible) {
+                                add(ReplaceBySelectedFormatQuickFix(element, declaration))
+                            }
+                            add(
+                                ProjectUpdateSettingsQuickfix(
+                                    elementFormat,
+                                    ProjectPersistentGradleVersionSettings.getInstance(element.project)
+                                )
+                            )
+                            add(ApplicationUpdateSettingsQuickfix(elementFormat))
+                        }
                     }
+
+                    holder.registerProblem(
+                        element,
+                        GradleUpdaterBundle.getMessage("inspection.inconsistent_format.description"),
+                        *quickFixes.toTypedArray()
+                    )
                 }
             }
         }

@@ -30,9 +30,13 @@ class SentryErrorHandler : ErrorReportSubmitter() {
                 }
             }
 
-            Sentry.captureEvent(event)
+            val id = Sentry.captureEvent(event)
 
-            val report = SubmittedReportInfo(SubmittedReportInfo.SubmissionStatus.NEW_ISSUE)
+            val report = SubmittedReportInfo(
+                GradleUpdaterBundle.getMessage("error_reporter.url"),
+                GradleUpdaterBundle.getMessage("error_reporter.reported").format(id),
+                SubmittedReportInfo.SubmissionStatus.NEW_ISSUE
+            )
             consumer.consume(report)
         }
 

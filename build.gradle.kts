@@ -55,7 +55,7 @@ tasks {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version = "2021.1"
+    version = "2021.1.1"
 
     setPlugins(
         // For gradle support

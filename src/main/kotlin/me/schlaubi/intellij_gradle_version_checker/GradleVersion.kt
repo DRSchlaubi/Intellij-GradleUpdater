@@ -29,7 +29,6 @@ import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
@@ -42,12 +41,12 @@ import kotlinx.serialization.encoding.Encoder
  *
  * @see GradleVersionResolvingActivity
  */
-lateinit var latestGradleVersion: GithubGradleVersion
+lateinit var latestGradleVersion: GradleVersion
     private set
 
-// https://regex101.com/r/oVpaYd/1/
-private val gradleVersionPattern = """((?:[0-9])+)\.((?:[0-9])+)(?:\.((?:[0-9])+))?""".toRegex()
-private const val latestGradleVersionEndpoint = "https://api.github.com/repos/gradle/gradle/releases/latest"
+// https://regex101.com/r/oVpaYd/2
+private val gradleVersionPattern = """([0-9]+)\.([0-9]+)(?:\.([0-9]+))?""".toRegex()
+private const val latestGradleVersionEndpoint = "https://services.gradle.org/versions/current"
 private val httpClient = HttpClient {
     install(JsonFeature) {
         val json = kotlinx.serialization.json.Json {
@@ -87,37 +86,33 @@ data class GradleVersion(val major: Int, val minor: Int, val revision: Int?) : C
 }
 
 internal suspend fun fetchGradleVersion() {
-    latestGradleVersion = httpClient.get(latestGradleVersionEndpoint)
+    latestGradleVersion = httpClient.get<List<GradleServiceVersion>>(latestGradleVersionEndpoint)
+        .asSequence()
+        .filter {
+            !it.nightly && !it.snapshot && !it.releaseNightly && !it.activeRc
+        }
+        .mapNotNull { it.version.parseGradleVersion() }
+        .maxOrNull() ?: error("Could not determine latest gradle version")
 }
 
 /**
  * Github response for latest Gradle release.
  */
 @Serializable
-data class GithubGradleVersion(
-    val url: String,
-    @SerialName("assets_url")
-    val assetsUrl: String,
-    @SerialName("upload_url")
-    val uploadUrl: String,
-    @SerialName("html_url")
-    val htmlUrl: String,
-    val id: Int,
-    @SerialName("node_id")
-    val nodeId: String,
-    @SerialName("tag_name")
-    val tagName: String,
-    @SerialName("target_commitish")
-    val targetCommitish: String,
-    @SerialName("name")
-    val gradleVersion: GradleVersion,
-    val draft: Boolean,
-    val prerelease: Boolean,
-    @SerialName("created_at")
-    val createdAt: String,
-    @SerialName("published_at")
-    val publishedAt: String,
-    val body: String
+data class GradleServiceVersion(
+    val version: String,
+    val buildTime: String,
+    val current: Boolean,
+    val snapshot: Boolean,
+    val nightly: Boolean,
+    val releaseNightly: Boolean,
+    val activeRc: Boolean,
+    val rcFor: String,
+    val milestoneFor: String,
+    val broken: Boolean,
+    val downloadUrl: String,
+    val checksumUrl: String,
+    val wrapperChecksumUrl: String
 )
 
 internal class GradleVersionSerializer : KSerializer<GradleVersion> {
@@ -127,7 +122,6 @@ internal class GradleVersionSerializer : KSerializer<GradleVersion> {
         decoder.decodeString().parseGradleVersion() ?: error("Invalid version format")
 
     override fun serialize(encoder: Encoder, value: GradleVersion) = encoder.encodeString(value.toString())
-
 }
 
 /**

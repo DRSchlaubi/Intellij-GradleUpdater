@@ -1,5 +1,3 @@
-package me.schlaubi.intellij_gradle_version_checker
-
 /*
  * MIT License
  *
@@ -24,13 +22,21 @@ package me.schlaubi.intellij_gradle_version_checker
  * SOFTWARE.
  */
 
-/**
- * Extracts the Gradle version from the [distributionUrl property](property) in gradle-wrapper.properties.
- */
-fun extractVersionFromDistributionUrlProperty(property: String): GradleVersion? {
-    val fileName = property.substringAfterLast('/') // /gradle-6.3-bin.zip
-    val version = fileName.substringAfter("gradle-").substringBefore(".zip")
-    val (versionName, _ /* type */) = version.split("-")
+package me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.compile
 
-    return versionName.parseGradleVersion()
+import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.openapi.project.Project
+import me.schlaubi.intellij_gradle_version_checker.GradleUpdaterBundle
+import me.schlaubi.intellij_gradle_version_checker.util.refreshGradle
+
+object SwitchToImplementationAndSyncQuickfix : SwitchToImplementationQuickfix() {
+
+    override fun getFamilyName(): String =
+        GradleUpdaterBundle.getMessage("quickfix.migrate_to_implementation_and_sync.family_name")
+
+    override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+        super.applyFix(project, descriptor)
+
+        project.refreshGradle()
+    }
 }

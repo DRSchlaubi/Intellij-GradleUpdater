@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package me.schlaubi.intellij_gradle_version_checker.inspection
+package me.schlaubi.intellij_gradle_version_checker.inspection.wrapper
 
 import com.intellij.codeInspection.LocalInspectionTool
 import com.intellij.codeInspection.LocalInspectionToolSession
@@ -31,16 +31,16 @@ import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.lang.properties.psi.Property
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
-import me.schlaubi.intellij_gradle_version_checker.*
+import me.schlaubi.intellij_gradle_version_checker.GradleUpdaterBundle
+import me.schlaubi.intellij_gradle_version_checker.GradleVersion
+import me.schlaubi.intellij_gradle_version_checker.latestGradleVersion
+import me.schlaubi.intellij_gradle_version_checker.util.extractVersionFromDistributionUrlProperty
 
 /**
  * Inspection inspecting gradle-wrapper.properties for outdated Gradle version.
  * @see LocalInspectionTool
  */
 class GradleWrapperVersionInspection : LocalInspectionTool() {
-
-    override fun getStaticDescription(): String =
-        GradleUpdaterBundle.getMessage("inspection.outdated_version.static_description")
 
     override fun buildVisitor(
         holder: ProblemsHolder,
@@ -54,21 +54,21 @@ class GradleWrapperVersionInspection : LocalInspectionTool() {
         return object : PsiElementVisitor() {
             override fun visitElement(element: PsiElement) {
                 if (
-                // Has to be a property
+                    // Has to be a property
                     element !is Property ||
                     // has to be the "distributionUrl" property
                     element.name != WRAPPER_VERSION_PROPERTY
                 ) return
                 val value = element.value ?: return
                 val gradleVersion = extractVersionFromDistributionUrlProperty(value) ?: return
-                val comparison = latestGradleVersion.gradleVersion.compareTo(gradleVersion)
+                val comparison = latestGradleVersion.compareTo(gradleVersion)
                 if (comparison != 0) {
                     val currentGradleVersion = gradleVersion.toString()
                     holder.registerProblem(
                         element,
                         GradleUpdaterBundle.getMessage(
                             "inspection.outdated_version.description",
-                            latestGradleVersion.gradleVersion
+                            latestGradleVersion
                         ),
                         when (comparison) {
                             GradleVersion.MAJOR -> ProblemHighlightType.LIKE_DEPRECATED
@@ -78,11 +78,11 @@ class GradleWrapperVersionInspection : LocalInspectionTool() {
                             else -> error("Invalid severity: $comparison")
                         },
                         UpgradeGradleVersionQuickFix(
-                            latestGradleVersion.gradleVersion.toString(),
+                            latestGradleVersion.toString(),
                             currentGradleVersion
                         ),
                         UpgradeGradleVersionAndSyncQuickFix(
-                            latestGradleVersion.gradleVersion.toString(),
+                            latestGradleVersion.toString(),
                             currentGradleVersion
                         )
                     )

@@ -22,4 +22,26 @@
  * SOFTWARE.
  */
 
-rootProject.name = "gradleupdater"
+package me.schlaubi.intellij_gradle_version_checker.inspection.wrapper
+
+import com.intellij.codeInspection.LocalQuickFix
+import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.lang.properties.psi.Property
+import com.intellij.openapi.project.Project
+import me.schlaubi.intellij_gradle_version_checker.GradleUpdaterBundle
+import me.schlaubi.intellij_gradle_version_checker.util.replace
+
+/**
+ * Quickfix for [GradleWrapperVersionInspection] replacing the old version with the latest one.
+ */
+open class UpgradeGradleVersionQuickFix internal constructor(
+    private val latestGradleVersion: String,
+    private val currentGradleVersion: String
+) : LocalQuickFix {
+    override fun getFamilyName(): String = GradleUpdaterBundle.getMessage("quickfix.update_gradle.family_name")
+
+    override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+        val property = descriptor.psiElement as? Property ?: error("This quick fix cannot be use outside of properties")
+        property.replace(currentGradleVersion, latestGradleVersion)
+    }
+}

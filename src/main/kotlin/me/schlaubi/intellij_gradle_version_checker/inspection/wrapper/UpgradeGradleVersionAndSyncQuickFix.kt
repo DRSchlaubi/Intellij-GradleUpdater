@@ -22,4 +22,25 @@
  * SOFTWARE.
  */
 
-rootProject.name = "gradleupdater"
+package me.schlaubi.intellij_gradle_version_checker.inspection.wrapper
+
+import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.openapi.externalSystem.autoimport.ExternalSystemProjectTracker
+import com.intellij.openapi.project.Project
+import me.schlaubi.intellij_gradle_version_checker.GradleUpdaterBundle
+import me.schlaubi.intellij_gradle_version_checker.util.refreshGradle
+
+/**
+ * Extension of [UpgradeGradleVersionQuickFix] which also calls [ExternalSystemProjectTracker.scheduleProjectRefresh].
+ */
+class UpgradeGradleVersionAndSyncQuickFix(latestGradleVersion: String, currentGradleVersion: String) :
+    UpgradeGradleVersionQuickFix(latestGradleVersion, currentGradleVersion) {
+    override fun getFamilyName(): String = GradleUpdaterBundle.getMessage("quickfix.update_gradle_and_sync.family_name")
+
+    @Suppress("UnstableApiUsage")
+    override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+        super.applyFix(project, descriptor)
+
+        project.refreshGradle()
+    }
+}

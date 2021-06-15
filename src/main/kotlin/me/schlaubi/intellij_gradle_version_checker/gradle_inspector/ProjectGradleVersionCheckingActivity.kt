@@ -22,11 +22,14 @@
  * SOFTWARE.
  */
 
-package me.schlaubi.intellij_gradle_version_checker
+package me.schlaubi.intellij_gradle_version_checker.gradle_inspector
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.changes.shelf.ShelvedChangesViewManager
-import me.schlaubi.intellij_gradle_version_checker.settings.ApplicationGradleVersionSettings
+import me.schlaubi.intellij_gradle_version_checker.GradleVersion
+import me.schlaubi.intellij_gradle_version_checker.GradleVersionNotifier
+import me.schlaubi.intellij_gradle_version_checker.latestGradleVersion
+import me.schlaubi.intellij_gradle_version_checker.parseGradleVersion
 import me.schlaubi.intellij_gradle_version_checker.settings.ProjectPersistentGradleVersionSettings
 import org.jetbrains.plugins.gradle.settings.GradleSettings
 import org.gradle.util.GradleVersion as GGradleVersion
@@ -38,15 +41,20 @@ import org.gradle.util.GradleVersion as GGradleVersion
 class ProjectGradleVersionCheckingActivity : ShelvedChangesViewManager.PostStartupActivity() {
 
     override fun runActivity(project: Project) {
-        if (ApplicationGradleVersionSettings.ignoreOutdatedVersion || ProjectPersistentGradleVersionSettings.getInstance(
+        if (ProjectPersistentGradleVersionSettings.getInstance(
                 project
             ).ignoreOutdatedVersion
         ) return
         val gradleSettings = GradleSettings.getInstance(project).getLinkedProjectSettings(project.basePath!!) ?: return
+
         if (gradleSettings.distributionType?.isWrapped == false) return
         val currentGradleVersion = gradleSettings.resolveGradleVersion().asGradleVersion()
-        if (latestGradleVersion.gradleVersion > currentGradleVersion) {
-            GradleVersionNotifier.notifyOutdated(project)
+        try {
+            if (latestGradleVersion > currentGradleVersion) {
+                GradleVersionNotifier.notifyOutdated(project)
+            }
+        } catch (ignored: UninitializedPropertyAccessException) {
+            // if you install without restarting GradleVersionResolvingActivity doesn't run for whatever reason
         }
     }
 }

@@ -22,20 +22,13 @@
  * SOFTWARE.
  */
 
-package me.schlaubi.intellij_gradle_version_checker
+package me.schlaubi.intellij_gradle_version_checker.util
 
+import com.intellij.openapi.externalSystem.autoimport.ExternalSystemProjectTracker
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.startup.StartupActivity
-import com.intellij.openapi.vcs.changes.shelf.ShelveChangesManager
-import kotlinx.coroutines.runBlocking
 
 /**
- * [StartupActivity] fetching the latest Gradle version before running inspections.
+ * Invokes a IntelliJ Gradle sync.
  */
-class GradleVersionResolvingActivity : ShelveChangesManager.PostStartupActivity() {
-    override fun runActivity(project: Project) {
-        runBlocking {
-            fetchGradleVersion()
-        }
-    }
-}
+@Suppress("UnstableApiUsage")
+fun Project.refreshGradle() = ExternalSystemProjectTracker.getInstance(this).scheduleProjectRefresh()

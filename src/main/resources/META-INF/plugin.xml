@@ -33,35 +33,45 @@
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.java</depends>
     <depends>com.intellij.properties</depends>
     <depends>com.intellij.gradle</depends>
+    <depends>org.jetbrains.kotlin</depends>
 
     <resource-bundle>messages.GradleUpdater</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
+        <copyPastePostProcessor
+                implementation="me.schlaubi.intellij_gradle_version_checker.copy.ConvertGroovyCopyPasteProcessor"/>
         <applicationService
                 serviceImplementation="me.schlaubi.intellij_gradle_version_checker.settings.ApplicationPersistentGradleVersionSettings"/>
         <projectService
                 serviceImplementation="me.schlaubi.intellij_gradle_version_checker.settings.ProjectPersistentGradleVersionSettings"/>
 
-        <groupConfigurable parentId="tools" descriptionKey="configurables.group.description" displayNameKey="configurables.group.display_name"
-                           id="me.schlaubi.intellij_gradle_version_checker.settings"/>
+        <groupConfigurable descriptionKey="configurable.group.tools.gradle_updater.settings.display.description"
+                           displayNameKey="configurable.group.tools.gradle_updater.settings.display.name"
+                           id="tools.gradle_updater" parentId="tools"/>
+
         <applicationConfigurable
-                parentId="me.schlaubi.intellij_gradle_version_checker.settings"
+                groupId="tools.gradle_updater"
                 instance="me.schlaubi.intellij_gradle_version_checker.settings.ApplicationGradleVersionSettingsConfigurable"
                 id="me.schlaubi.intellij_gradle_version_checker.settings.ApplicationGradleVersionSettingsConfigurable"
                 displayName="Application Settings"/>
         <projectConfigurable
-                parentId="me.schlaubi.intellij_gradle_version_checker.settings"
+                parentId="tools.gradle_updater"
                 instance="me.schlaubi.intellij_gradle_version_checker.settings.ProjectGradleVersionSettingsConfigurable"
                 id="me.schlaubi.intellij_gradle_version_checker.settings.ProjectGradleVersionSettingsConfigurable"
                 displayName="Project Settings"/>
 
-        <postStartupActivity implementation="me.schlaubi.intellij_gradle_version_checker.GradleVersionResolvingActivity"
-                             id="me.schlaubi.intellij_gradle_version_checker.GradleVersionResolvingActivity"/>
         <postStartupActivity
-                implementation="me.schlaubi.intellij_gradle_version_checker.ProjectGradleVersionCheckingActivity"
-                order="after me.schlaubi.intellij_gradle_version_checker.GradleVersionResolvingActivity"/>
+                implementation="me.schlaubi.intellij_gradle_version_checker.error_handling.InitializeSentryActivity"
+                order="before me.schlaubi.intellij_gradle_version_checker.gradle_inspector.GradleVersionResolvingActivity"/>
+        <postStartupActivity
+                implementation="me.schlaubi.intellij_gradle_version_checker.gradle_inspector.GradleVersionResolvingActivity"
+                id="me.schlaubi.intellij_gradle_version_checker.gradle_inspector.GradleVersionResolvingActivity"/>
+        <postStartupActivity
+                implementation="me.schlaubi.intellij_gradle_version_checker.gradle_inspector.ProjectGradleVersionCheckingActivity"
+                order="after me.schlaubi.intellij_gradle_version_checker.gradle_inspector.GradleVersionResolvingActivity"/>
 
         <localInspection
                 language="Properties"
@@ -70,9 +80,69 @@
                 displayName="Outdated Gradle version"
                 groupKey="inspection.group.name"
                 hasStaticDescription="true"
-                implementationClass="me.schlaubi.intellij_gradle_version_checker.inspection.GradleWrapperVersionInspection"
+                implementationClass="me.schlaubi.intellij_gradle_version_checker.inspection.wrapper.GradleWrapperVersionInspection"
         />
 
-        <notificationGroup displayType="BALLOON" id="me.schlaubi.intellij_gradle_version_checker.notifications.OutdatedVersion" key="notification.group.title"/>
+        <localInspection
+                language="kotlin"
+                displayName="Compile"
+                groupKey="inspection.group.name"
+                enabledByDefault="true"
+                implementationClass="me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.compile.CompileDependencyInspection"
+        />
+
+        <localInspection
+                language="kotlin"
+                displayName="Gradle missusage"
+                groupKey="inspection.group.name"
+                enabledByDefault="true"
+                implementationClass="me.schlaubi.intellij_gradle_version_checker.inspection.plugins.kotlin.KotlinPluginWithIdInspection"
+        />
+
+        <localInspection
+                language="kotlin"
+                displayName="Gradle missusage"
+                groupKey="inspection.group.name"
+                enabledByDefault="true"
+                implementationClass="me.schlaubi.intellij_gradle_version_checker.inspection.plugins.builtins.BuiltInPluginWithIdInspection"
+        />
+
+        <localInspection
+                language="kotlin"
+                displayName="Gradle missusage"
+                groupKey="inspection.group.name"
+                enabledByDefault="true"
+                implementationClass="me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.inconstant_format.InconstantFormatInspection"
+        />
+
+        <localInspection
+                language="kotlin"
+                displayName="Gradle missusage"
+                groupKey="inspection.group.name"
+                enabledByDefault="true"
+                implementationClass="me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.kotlin.unnecessary_coordinates.KotlinInspectionWithCoordinatesInspection"
+        />
+
+        <localInspection
+                language="kotlin"
+                displayName="Gradle missusage"
+                groupKey="inspection.group.name"
+                enabledByDefault="true"
+                implementationClass="me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.kotlin.redundant_version.RedundantVersionInspection"
+        />
+
+        <localInspection
+                language="kotlin"
+                displayName="Gradle missusage"
+                groupKey="inspection.group.name"
+                enabledByDefault="true"
+                implementationClass="me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.kotlin.stdlib.DependencyOnStdlibInspection"
+        />
+
+        <notificationGroup displayType="BALLOON"
+                           id="me.schlaubi.intellij_gradle_version_checker.notifications.OutdatedVersion"
+                           key="notification.group.title"/>
+
+        <errorHandler implementation="me.schlaubi.intellij_gradle_version_checker.error_handling.SentryErrorHandler"/>
     </extensions>
 </idea-plugin>

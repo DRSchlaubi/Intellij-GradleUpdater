@@ -22,4 +22,35 @@
  * SOFTWARE.
  */
 
-rootProject.name = "gradleupdater"
+package me.schlaubi.intellij_gradle_version_checker.util
+
+import org.jetbrains.kotlin.psi.KtPsiFactory
+import org.jetbrains.kotlin.psi.KtStringTemplateEntry
+import org.jetbrains.kotlin.psi.KtStringTemplateExpression
+
+/**
+ * Whether this is a plain string or a interpolation template.
+ */
+fun KtStringTemplateExpression.isSimple() = entries.size == 1
+
+/**
+ * Returns the value of a string without interpolation
+ */
+val KtStringTemplateExpression.simpleValue: String
+    get() = entries.first().value
+
+/**
+ * The value of a string template entry
+ */
+val KtStringTemplateEntry.value: String
+    get() = text.removeSurrounding("\"")
+
+/**
+ * Converts a [String] into a [KtStringTemplateExpression].
+ */
+fun String.toPsiTemplate(factory: KtPsiFactory): KtStringTemplateExpression =
+    factory.createStringTemplate(this)
+
+fun KtStringTemplateExpression.equalsString(string: String) = isSimple() && simpleValue == string
+
+fun KtStringTemplateExpression.startsWith(prefix: String) = isSimple() && simpleValue.startsWith(prefix)

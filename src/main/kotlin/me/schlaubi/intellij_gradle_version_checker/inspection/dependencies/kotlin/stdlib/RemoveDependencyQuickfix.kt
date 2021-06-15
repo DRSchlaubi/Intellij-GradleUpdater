@@ -22,4 +22,19 @@
  * SOFTWARE.
  */
 
-rootProject.name = "gradleupdater"
+package me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.kotlin.stdlib
+
+import com.intellij.codeInspection.LocalQuickFixOnPsiElement
+import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
+import me.schlaubi.intellij_gradle_version_checker.GradleUpdaterBundle
+
+class RemoveDependencyQuickfix(element: PsiElement) : LocalQuickFixOnPsiElement(element) {
+    override fun getFamilyName(): String = GradleUpdaterBundle.getMessage("inspection.stdlib_dependency.quickfix.remove")
+
+    override fun getText(): String = familyName
+
+    override fun invoke(project: Project, file: PsiFile, startElement: PsiElement, endElement: PsiElement) =
+        startElement.delete()
+}

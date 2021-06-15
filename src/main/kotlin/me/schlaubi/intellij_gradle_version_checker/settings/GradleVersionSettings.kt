@@ -30,6 +30,8 @@ import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.project.Project
 import com.intellij.util.xmlb.XmlSerializerUtil
+import com.intellij.util.xmlb.annotations.Transient
+import me.schlaubi.intellij_gradle_version_checker.dependency_format.DependencyFormat
 
 /**
  * Base class for persistent [GradleVersionSettings].
@@ -38,10 +40,15 @@ import com.intellij.util.xmlb.XmlSerializerUtil
  * @see GradleVersionSettings
  * @see PersistentStateComponent
  */
-sealed class AbstractPersistentGradleVersionSettings<T : GradleVersionSettings> : GradleVersionSettings,
+sealed class AbstractPersistentGradleVersionSettings<T : GradleVersionSettings> :
+    GradleVersionSettings,
     PersistentStateComponent<T> {
 
     override var ignoreOutdatedVersion = false
+
+    override var alwaysConvertGroovy: Boolean = false
+
+    override var dependencyFormat: String = DependencyFormat.NotationDependencyFormat::class.simpleName ?: "<error>"
 
     @Suppress("UNCHECKED_CAST")
     override fun getState(): T = this as T
@@ -51,7 +58,6 @@ sealed class AbstractPersistentGradleVersionSettings<T : GradleVersionSettings> 
     }
 
     override fun asMemoryCopy(): GradleVersionSettings = MemoryGradleVersionSettings(this)
-
 }
 
 /**
@@ -78,7 +84,15 @@ class ApplicationPersistentGradleVersionSettings :
 )
 class ProjectPersistentGradleVersionSettings :
     AbstractPersistentGradleVersionSettings<ProjectPersistentGradleVersionSettings>() {
+    @Transient
+    private val parent = ApplicationGradleVersionSettings
+
+    override var ignoreOutdatedVersion: Boolean = parent.ignoreOutdatedVersion
+    override var alwaysConvertGroovy: Boolean = parent.alwaysConvertGroovy
+    override var dependencyFormat: String = parent.dependencyFormat
+
     companion object {
+        @JvmStatic
         fun getInstance(project: Project): GradleVersionSettings =
             ServiceManager.getService(project, ProjectPersistentGradleVersionSettings::class.java)
     }
@@ -87,11 +101,14 @@ class ProjectPersistentGradleVersionSettings :
 /**
  * Non persistent implementation of [GradleVersionSettings].
  */
-data class MemoryGradleVersionSettings(override var ignoreOutdatedVersion: Boolean = false) : GradleVersionSettings {
+data class MemoryGradleVersionSettings(
+    override var ignoreOutdatedVersion: Boolean = false,
+    override var alwaysConvertGroovy: Boolean = false,
+    override var dependencyFormat: String = DependencyFormat.NotationDependencyFormat::class.simpleName ?: "<error>"
+) : GradleVersionSettings {
     constructor(settings: GradleVersionSettings) : this(settings.ignoreOutdatedVersion)
 
     override fun asMemoryCopy(): GradleVersionSettings = copy()
-
 }
 
 /**
@@ -108,6 +125,16 @@ interface GradleVersionSettings {
      * Whether version notification should be enabled or not.
      */
     var ignoreOutdatedVersion: Boolean
+
+    /**
+     * Whether to ask if Groovy should be converted to Kotlin.
+     */
+    var alwaysConvertGroovy: Boolean
+
+    /**
+     * The name of the dependency format which is supposed to match all dependencies.
+     */
+    var dependencyFormat: String
 
     /**
      * Creates a non-persistent copy of this instance.

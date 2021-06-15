@@ -23,49 +23,78 @@
  */
 
 plugins {
-    id("org.jetbrains.intellij") version "0.6.1"
-    kotlin("jvm") version "1.4.20"
-    kotlin("plugin.serialization") version "1.4.20"
+    java
+    kotlin("jvm") version "1.5.10"
+    kotlin("plugin.serialization") version "1.5.10"
+    id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
+    id("org.jetbrains.intellij") version "1.0"
 }
 
 group = "me.schlaubi"
-version = "1.1-SNAPSHOT"
+version = "2.0.0"
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx", "kotlinx-serialization-json", "1.0.1")
-    implementation("io.ktor", "ktor-client-okhttp", "1.4.2")
-    implementation("io.ktor", "ktor-client-serialization-jvm", "1.4.2")
+    implementation("org.jetbrains.kotlinx", "kotlinx-serialization-json", "1.2.0")
+    implementation("io.sentry", "sentry", "4.3.0")
+
+    implementation(platform("io.ktor:ktor-bom:1.6.0"))
+    implementation("io.ktor", "ktor-client-okhttp")
+    implementation("io.ktor", "ktor-client-serialization-jvm")
 }
 
 tasks {
     compileKotlin {
         kotlinOptions {
             jvmTarget = "1.8"
+            freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
         }
     }
 }
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version = "2020.3"
-
-    setPlugins(
-        // For gradle support
-        "gradle",
-        // To properly parse gradle-wrapper.properties
-        "properties"
+    version.set("2021.1.2")
+    plugins.set(
+        listOf(
+            // For gradle support
+            "gradle",
+            // To properly parse gradle-wrapper.properties
+            "properties",
+            // Some kotlin classes depend on the java plugin
+            "java",
+            // To properly parse build.gradle.kts
+            "org.jetbrains.kotlin"
+        )
     )
 }
-tasks.getByName<org.jetbrains.intellij.tasks.PatchPluginXmlTask>("patchPluginXml") {
-    changeNotes(
-        """
-        - Migrate to IntelliJ 2020.3
-        - Refactor code
-        - Update dependencies
-    """.trimIndent()
-    )
+
+tasks {
+    patchPluginXml {
+        changeNotes.set(
+            """
+            2.0.0
+            - Add Inspection for manual Kotlin Gradle dependencies
+            - Add inspection for dependency on Kotlin stdlib
+            - Add inspection for inconsistent dependency format usage
+            - Add on-paste converter for Groovy code snippets in .gradle.kts files
+            - Replace plugin icon
+            - Make version notification also use PSI to avoid Properties formatting issues
+            - Make version notification expire after action is taken
+            """.trimIndent()
+        )
+    }
+}
+
+configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
+    disabledRules.set(listOf("no-wildcard-imports"))
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    }
 }

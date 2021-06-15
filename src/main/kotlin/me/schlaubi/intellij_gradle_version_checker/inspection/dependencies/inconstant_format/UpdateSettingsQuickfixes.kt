@@ -22,40 +22,37 @@
  * SOFTWARE.
  */
 
-package me.schlaubi.intellij_gradle_version_checker.inspection
+package me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.inconstant_format
 
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
-import com.intellij.lang.properties.psi.Property
-import com.intellij.lang.properties.psi.impl.PropertyImpl
-import com.intellij.lang.properties.psi.impl.PropertyValueImpl
 import com.intellij.openapi.project.Project
-import com.intellij.psi.impl.source.codeStyle.CodeEditUtil
 import me.schlaubi.intellij_gradle_version_checker.GradleUpdaterBundle
+import me.schlaubi.intellij_gradle_version_checker.dependency_format.DependencyFormat
+import me.schlaubi.intellij_gradle_version_checker.settings.ApplicationGradleVersionSettings
+import me.schlaubi.intellij_gradle_version_checker.settings.GradleVersionSettings
+import me.schlaubi.intellij_gradle_version_checker.util.name
 
-/**
- * Quickfix for [GradleWrapperVersionInspection] replacing the old version with the latest one.
- */
-open class UpgradeGradleVersionQuickFix internal constructor(
-    private val latestGradleVersion: String,
-    private val currentGradleVersion: String
-) :
-    LocalQuickFix {
-    override fun getFamilyName(): String = GradleUpdaterBundle.getMessage("quickfix.update_gradle.family_name")
-
+sealed class AbstractUpdateSettingsQuickfix(
+    private val dependencyFormat: DependencyFormat,
+    private val settings: GradleVersionSettings
+) : LocalQuickFix {
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-        val property = descriptor.psiElement as? Property ?: error("This quick fix cannot be use outside of properties")
-        val currentValue = property.value ?: error("Property does not have a value yet")
-
-        // For some reason Property.setValue() escapes https\:// to https\\:// which causes gradle build to fail
-        // So we replace the value manually to prevent escaping
-        val oldNode = (property as PropertyImpl).valueNode as PropertyValueImpl
-        val newNode = PropertyValueImpl(
-            oldNode.elementType,
-            currentValue.replace(currentGradleVersion, latestGradleVersion)
-        ).apply {
-            CodeEditUtil.setNodeGenerated(this, true)
-        }
-        property.node.replaceChild(oldNode, newNode)
+        settings.dependencyFormat = dependencyFormat.name
     }
+}
+
+class ApplicationUpdateSettingsQuickfix(
+    dependencyFormat: DependencyFormat
+) : AbstractUpdateSettingsQuickfix(dependencyFormat, ApplicationGradleVersionSettings) {
+    override fun getFamilyName(): String =
+        GradleUpdaterBundle.getMessage("inspection.inconsistent_format.quickfix.update_app")
+}
+
+class ProjectUpdateSettingsQuickfix(
+    dependencyFormat: DependencyFormat,
+    settings: GradleVersionSettings
+) : AbstractUpdateSettingsQuickfix(dependencyFormat, settings) {
+    override fun getFamilyName(): String =
+        GradleUpdaterBundle.getMessage("inspection.inconsistent_format.quickfix.update_project")
 }

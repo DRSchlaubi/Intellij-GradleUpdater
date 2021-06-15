@@ -22,4 +22,17 @@
  * SOFTWARE.
  */
 
-rootProject.name = "gradleupdater"
+package me.schlaubi.intellij_gradle_version_checker.error_handling
+
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.vcs.changes.shelf.ShelveChangesManager
+import io.sentry.Sentry
+
+class InitializeSentryActivity : ShelveChangesManager.PostStartupActivity() {
+    override fun runActivity(project: Project) {
+        Sentry.init {
+            it.dsn = "https://6e5abd02eeb54b52a88dcd645f7ba34b@o662209.ingest.sentry.io/5765206"
+            it.sampleRate = 1.0
+        }
+    }
+}

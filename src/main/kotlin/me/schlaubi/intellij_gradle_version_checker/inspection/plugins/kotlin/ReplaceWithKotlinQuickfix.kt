@@ -22,24 +22,22 @@
  * SOFTWARE.
  */
 
-package me.schlaubi.intellij_gradle_version_checker.inspection
+package me.schlaubi.intellij_gradle_version_checker.inspection.plugins.kotlin
 
+import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
-import com.intellij.openapi.externalSystem.autoimport.ExternalSystemProjectTracker
 import com.intellij.openapi.project.Project
 import me.schlaubi.intellij_gradle_version_checker.GradleUpdaterBundle
+import org.jetbrains.kotlin.psi.KtPsiFactory
 
-/**
- * Extension of [UpgradeGradleVersionQuickFix] which also calls [ExternalSystemProjectTracker.scheduleProjectRefresh].
- */
-class UpgradeGradleVersionAndSyncQuickFix(latestGradleVersion: String, currentGradleVersion: String) :
-    UpgradeGradleVersionQuickFix(latestGradleVersion, currentGradleVersion) {
-    override fun getFamilyName(): String = GradleUpdaterBundle.getMessage("quickfix.update_gradle_and_sync.family_name")
+class ReplaceWithKotlinQuickfix(private val id: String) : LocalQuickFix {
+    override fun getFamilyName(): String =
+        GradleUpdaterBundle.getMessage("inspection.kotlin_plugin_with_id.quickfix.replace")
 
-    @Suppress("UnstableApiUsage")
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-        super.applyFix(project, descriptor)
+        val idCall = descriptor.psiElement
+        val builtInCall = KtPsiFactory(project).createExpression("""kotlin("$id")""")
 
-        ExternalSystemProjectTracker.getInstance(project).scheduleProjectRefresh()
+        idCall.replace(builtInCall)
     }
 }

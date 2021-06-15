@@ -22,4 +22,22 @@
  * SOFTWARE.
  */
 
-rootProject.name = "gradleupdater"
+package me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.kotlin.redundant_version
+
+import com.intellij.codeInspection.LocalQuickFix
+import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.openapi.project.Project
+import com.intellij.psi.SmartPsiElementPointer
+import org.jetbrains.kotlin.psi.KtValueArgument
+import org.jetbrains.kotlin.psi.KtValueArgumentList
+
+class RemoveRedundantVersionQuickfix(
+    private val arguments: SmartPsiElementPointer<KtValueArgumentList>,
+    private val argument: SmartPsiElementPointer<KtValueArgument>
+) : LocalQuickFix {
+    override fun getFamilyName(): String = "remove"
+
+    override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+        argument.element?.let { argument -> arguments.element?.removeArgument(argument) }
+    }
+}

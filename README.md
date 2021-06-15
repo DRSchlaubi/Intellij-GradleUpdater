@@ -8,35 +8,36 @@ Intellij plugin which converts Groovy to Kotlin and updates your Gradle version 
 
 ### Dependencies
 
-![](https://preview.redd.it/h2dk26zs1mu61.gif?format=mp4&s=629f0343c5a5f929d107b1ab6282a65bbf3c0c19)
-
+![ezgif com-gif-maker (4)](https://user-images.githubusercontent.com/16060205/122114008-1798d000-ce23-11eb-9f4d-0c6f1efc9bfc.gif)
 ### Plugins
 
-![](https://preview.redd.it/2rd9bbzu1mu61.gif?format=mp4&s=ffc79197285b83365d8fb5faf23d0881798bd82a)
-
+![ezgif com-gif-maker (3)](https://user-images.githubusercontent.com/16060205/122113944-05b72d00-ce23-11eb-8a80-cf333f9950f0.gif)
 ### Strings
 
-![](https://preview.redd.it/xq9gqakw1mu61.gif?format=mp4&s=db9aa38602022f7d7effee251c2520c0958c5746)
+![ezgif com-gif-maker (2)](https://user-images.githubusercontent.com/16060205/122113897-f801a780-ce22-11eb-8682-08848a67e4d6.gif)
 
 ## Dependency format conversion
+![ezgif com-gif-maker (1)](https://user-images.githubusercontent.com/16060205/122113816-e0c2ba00-ce22-11eb-97ca-d56743b447d3.gif)
 
 ### To positional
 
-![](https://preview.redd.it/meyu6cpn1mu61.gif?format=mp4&s=f77642029df494d5346deea38847ce1f15c31fbb)
+![ezgif com-gif-maker (5)](https://user-images.githubusercontent.com/16060205/122114091-2e3f2700-ce23-11eb-95c4-2d040340ebb6.gif)
+
 
 ### To Named
-
-![](https://preview.redd.it/swaaiqqp1mu61.gif?format=mp4&s=c7049f669350cf4a98d52eabb01f0954e7c83879)
+![ezgif com-gif-maker](https://user-images.githubusercontent.com/16060205/122113732-c7217280-ce22-11eb-8d39-310008a15c79.gif)
 
 ### To notation
 
-![](https://preview.redd.it/l7z6ular1mu61.gif?format=mp4&s=05681c70c9cc02728365a002e0b4bcf92747178e)
+![](https://user-images.githubusercontent.com/16060205/122113602-9d684b80-ce22-11eb-8576-89bb64ffa36e.gif)
 
 ## More idiomatic Kotlin
 
 ### Plugins
 
-![](https://preview.redd.it/ln1rmo5l2mu61.gif?format=mp4&s=87b46b5de5003e1538bc58807a82534b71b187f1)
+![ln1rmo5l2mu61](https://user-images.githubusercontent.com/16060205/122113505-7c9ff600-ce22-11eb-9886-7b1bc3390dad.gif)
+
+
 
 Also works for `kotlin()` dependencies
 

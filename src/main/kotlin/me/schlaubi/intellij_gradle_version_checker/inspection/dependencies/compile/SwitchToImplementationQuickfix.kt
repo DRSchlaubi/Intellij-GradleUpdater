@@ -31,7 +31,7 @@ import me.schlaubi.intellij_gradle_version_checker.GradleUpdaterBundle
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtPsiFactory
 
-open class SwitchToImplementationQuickfix internal constructor(): LocalQuickFix {
+open class SwitchToImplementationQuickfix internal constructor() : LocalQuickFix {
     override fun getFamilyName(): String =
         GradleUpdaterBundle.getMessage("quickfix.migrate_to_implementation.family_name")
 

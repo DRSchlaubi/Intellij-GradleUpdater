@@ -26,7 +26,6 @@ package me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.kotl
 
 import com.intellij.codeInspection.LocalInspectionToolSession
 import com.intellij.codeInspection.ProblemsHolder
-import com.intellij.psi.NavigatablePsiElement
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.SmartPointerManager
 import me.schlaubi.intellij_gradle_version_checker.GradleUpdaterBundle
@@ -66,8 +65,8 @@ class KotlinInspectionWithCoordinatesInspection : AbstractBuildScriptInspection(
                 val groupTemplate = group as? KtStringTemplateExpression ?: return
                 val nameTemplate = name as? KtStringTemplateExpression ?: return
                 if (
-                    groupTemplate.equalsString("org.jetbrains.kotlin")
-                    && nameTemplate.startsWith("kotlin-")
+                    groupTemplate.equalsString("org.jetbrains.kotlin") &&
+                    nameTemplate.startsWith("kotlin-")
                 ) {
                     val module = name.simpleValue.substringAfter("kotlin-")
                     val versionsSimple = (version as? KtStringTemplateExpression)?.isSimple() == true
@@ -96,4 +95,3 @@ class KotlinInspectionWithCoordinatesInspection : AbstractBuildScriptInspection(
         }
     }
 }
-

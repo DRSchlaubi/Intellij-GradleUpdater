@@ -68,8 +68,8 @@ abstract class DependencyDeclarationVisitor(private val ignoreConfigurations: Bo
             val children = PsiTreeUtil.findChildrenOfType(callee, KtUserType::class.java).asSequence().map { it.text }
             return children.any {
                 it == "org.gradle.api.artifacts.dsl.DependencyHandler"
-            }
-                    && (ignoreConfigurations || callee.name in gradleExtensionsSettings.configurations.keys)
+            } &&
+                (ignoreConfigurations || callee.name in gradleExtensionsSettings.configurations.keys)
         }
 
         return false

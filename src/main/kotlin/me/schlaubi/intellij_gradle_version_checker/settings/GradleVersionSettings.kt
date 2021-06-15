@@ -40,7 +40,8 @@ import me.schlaubi.intellij_gradle_version_checker.dependency_format.DependencyF
  * @see GradleVersionSettings
  * @see PersistentStateComponent
  */
-sealed class AbstractPersistentGradleVersionSettings<T : GradleVersionSettings> : GradleVersionSettings,
+sealed class AbstractPersistentGradleVersionSettings<T : GradleVersionSettings> :
+    GradleVersionSettings,
     PersistentStateComponent<T> {
 
     override var ignoreOutdatedVersion = false
@@ -57,7 +58,6 @@ sealed class AbstractPersistentGradleVersionSettings<T : GradleVersionSettings> 
     }
 
     override fun asMemoryCopy(): GradleVersionSettings = MemoryGradleVersionSettings(this)
-
 }
 
 /**
@@ -86,7 +86,7 @@ class ProjectPersistentGradleVersionSettings :
     AbstractPersistentGradleVersionSettings<ProjectPersistentGradleVersionSettings>() {
     @Transient
     private val parent = ApplicationGradleVersionSettings
-    
+
     override var ignoreOutdatedVersion: Boolean = parent.ignoreOutdatedVersion
     override var alwaysConvertGroovy: Boolean = parent.alwaysConvertGroovy
     override var dependencyFormat: String = parent.dependencyFormat
@@ -109,7 +109,6 @@ data class MemoryGradleVersionSettings(
     constructor(settings: GradleVersionSettings) : this(settings.ignoreOutdatedVersion)
 
     override fun asMemoryCopy(): GradleVersionSettings = copy()
-
 }
 
 /**

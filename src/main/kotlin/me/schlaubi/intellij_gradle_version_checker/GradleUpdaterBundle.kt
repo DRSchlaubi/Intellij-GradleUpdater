@@ -27,7 +27,6 @@ package me.schlaubi.intellij_gradle_version_checker
 import com.intellij.DynamicBundle
 import org.jetbrains.annotations.PropertyKey
 
-
 /**
  * [DynamicBundle] for messages of this plugin.
  */

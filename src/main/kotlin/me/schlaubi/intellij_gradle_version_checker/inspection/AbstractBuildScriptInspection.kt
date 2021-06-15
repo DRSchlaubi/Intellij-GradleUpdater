@@ -43,8 +43,9 @@ abstract class AbstractBuildScriptInspection : LocalInspectionTool() {
     ): PsiElementVisitor {
         val ktFile = session.file as? KtFile
         if (ktFile?.script?.descriptor?.parents?.none {
-                it.name.asString().contains("KotlinBuildScript")
-            } == true) return PsiElementVisitor.EMPTY_VISITOR
+            it.name.asString().contains("KotlinBuildScript")
+        } == true
+        ) return PsiElementVisitor.EMPTY_VISITOR
 
         return buildVisitor(holder, isOnTheFly, session, ktFile!!)
     }

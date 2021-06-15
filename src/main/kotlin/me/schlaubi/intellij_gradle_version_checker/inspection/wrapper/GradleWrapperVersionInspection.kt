@@ -54,7 +54,7 @@ class GradleWrapperVersionInspection : LocalInspectionTool() {
         return object : PsiElementVisitor() {
             override fun visitElement(element: PsiElement) {
                 if (
-                // Has to be a property
+                    // Has to be a property
                     element !is Property ||
                     // has to be the "distributionUrl" property
                     element.name != WRAPPER_VERSION_PROPERTY

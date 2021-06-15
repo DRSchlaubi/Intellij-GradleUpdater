@@ -41,7 +41,7 @@ fun getSentryException(throwable: Throwable): SentryException {
     val exceptionClassName =
         if (exceptionPackage != null) fullClassName.replace(exceptionPackage.name + ".", "") else fullClassName
     val exceptionPackageName = exceptionPackage?.name
-    val frames= getStackFrames(throwable.stackTrace)
+    val frames = getStackFrames(throwable.stackTrace)
     if (frames != null && frames.isNotEmpty()) {
         val sentryStackTrace = SentryStackTrace(frames)
         exception.stacktrace = sentryStackTrace
@@ -62,9 +62,9 @@ fun getStackFrames(elements: Array<StackTraceElement?>?): List<SentryStackFrame?
 
                 // we don't want to add our own frames
                 val className = item.className
-                if (className.startsWith("io.sentry.")
-                    && !className.startsWith("io.sentry.samples.")
-                    && !className.startsWith("io.sentry.mobile.")
+                if (className.startsWith("io.sentry.") &&
+                    !className.startsWith("io.sentry.samples.") &&
+                    !className.startsWith("io.sentry.mobile.")
                 ) {
                     continue
                 }

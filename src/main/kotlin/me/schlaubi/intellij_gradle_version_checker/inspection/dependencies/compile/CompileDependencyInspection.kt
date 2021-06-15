@@ -46,7 +46,8 @@ class CompileDependencyInspection : AbstractBuildScriptInspection() {
         file: KtFile
     ): PsiElementVisitor {
         return object : DependencyDeclarationVisitor(true) {
-            override fun visitDependencyDeclaration(element: KtCallExpression) { if (!element.isDeprecatedDependencyDeclaration()) return
+            override fun visitDependencyDeclaration(element: KtCallExpression) {
+                if (!element.isDeprecatedDependencyDeclaration()) return
 
                 holder.registerProblem(
                     element,
@@ -66,6 +67,6 @@ private fun KtTypeParameterListOwnerStub<KotlinFunctionStub>.isDeprecated() =
 private fun KtCallExpression.isDeprecatedDependencyDeclaration(): Boolean {
     val function = calleeFunction ?: return false
 
-    return function.isDeprecated() // Only complain if a Gradle version which actually deprecates this is used
-            && function.name == "compile"
+    return function.isDeprecated() && // Only complain if a Gradle version which actually deprecates this is used
+        function.name == "compile"
 }

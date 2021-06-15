@@ -47,7 +47,6 @@ class ProjectGradleVersionCheckingActivity : ShelvedChangesViewManager.PostStart
         ) return
         val gradleSettings = GradleSettings.getInstance(project).getLinkedProjectSettings(project.basePath!!) ?: return
 
-
         if (gradleSettings.distributionType?.isWrapped == false) return
         val currentGradleVersion = gradleSettings.resolveGradleVersion().asGradleVersion()
         try {

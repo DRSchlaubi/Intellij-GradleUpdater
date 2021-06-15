@@ -40,7 +40,6 @@ import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
 
-
 /**
  * [Configurable] for [ApplicationGradleVersionSettings].
  */
@@ -117,9 +116,9 @@ sealed class AbstractGradleVersionApplicationSettingsConfigurable(
     }
 
     override fun isModified(): Boolean {
-        return settingsProvider().ignoreOutdatedVersion != settings.ignoreOutdatedVersion
-                || settingsProvider().alwaysConvertGroovy != settings.alwaysConvertGroovy
-                || settingsProvider().dependencyFormat != settings.dependencyFormat
+        return settingsProvider().ignoreOutdatedVersion != settings.ignoreOutdatedVersion ||
+            settingsProvider().alwaysConvertGroovy != settings.alwaysConvertGroovy ||
+            settingsProvider().dependencyFormat != settings.dependencyFormat
     }
 
     override fun apply() {
@@ -130,7 +129,6 @@ sealed class AbstractGradleVersionApplicationSettingsConfigurable(
 
     override fun getDisplayName(): String = "Gradle Version Updater"
 }
-
 
 private fun String.toDocument(): Document =
     EditorFactory.getInstance().createDocument(StringUtil.convertLineSeparators(this))

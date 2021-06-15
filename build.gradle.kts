@@ -24,9 +24,10 @@
 
 plugins {
     java
-    id("org.jetbrains.intellij") version "1.0"
     kotlin("jvm") version "1.5.10"
     kotlin("plugin.serialization") version "1.5.10"
+    id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
+    id("org.jetbrains.intellij") version "1.0"
 }
 
 group = "me.schlaubi"
@@ -83,11 +84,17 @@ tasks {
             - Replace plugin icon
             - Make version notification also use PSI to avoid Properties formatting issues
             - Make version notification expire after action is taken
-        """.trimIndent()
+            """.trimIndent()
         )
     }
 }
 
-configure<JavaPluginConvention> {
-    sourceCompatibility = JavaVersion.VERSION_1_8
+configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
+    disabledRules.set(listOf("no-wildcard-imports"))
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    }
 }

@@ -46,7 +46,6 @@ import me.schlaubi.intellij_gradle_version_checker.util.replace
  */
 object GradleVersionNotifier {
 
-
     /**
      * Sends a notification to [project] telling the user to update the project's Gradle version.
      */

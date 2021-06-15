@@ -93,7 +93,6 @@ internal suspend fun fetchGradleVersion() {
         }
         .mapNotNull { it.version.parseGradleVersion() }
         .maxOrNull() ?: error("Could not determine latest gradle version")
-
 }
 
 /**
@@ -123,7 +122,6 @@ internal class GradleVersionSerializer : KSerializer<GradleVersion> {
         decoder.decodeString().parseGradleVersion() ?: error("Invalid version format")
 
     override fun serialize(encoder: Encoder, value: GradleVersion) = encoder.encodeString(value.toString())
-
 }
 
 /**

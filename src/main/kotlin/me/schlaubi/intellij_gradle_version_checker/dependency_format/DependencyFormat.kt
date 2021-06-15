@@ -98,9 +98,9 @@ sealed class DependencyFormat {
             if (parameters.size != 1) return false
 
             val possibleNotation = parameters.first()
-            if (!possibleNotation.isAny()
+            if (!possibleNotation.isAny() ||
                 // Passing in a function as kotlin() is not considered to be notation format
-                || valueArguments.first().firstChild !is KtStringTemplateExpression
+                valueArguments.first().firstChild !is KtStringTemplateExpression
             ) return false
 
             if (parameters.size == 1) return true
@@ -125,7 +125,6 @@ sealed class DependencyFormat {
             val factory = KtPsiFactory(project)
             val template = valueArguments.first().firstChild as? KtStringTemplateExpression
                 ?: error("This is not a notation declaration: $text")
-
 
             val components = template.simpleValue.split(':')
             val (group, name) = components
@@ -262,7 +261,6 @@ sealed class DependencyFormat {
                 appendFixedText(")")
             }
         }
-
     }
 
     object SemiNamedDependencyFormat : DependencyFormat() {
@@ -347,7 +345,7 @@ private fun KtParameter.isAny() =
     type()?.fqName?.asString() == "kotlin.Any"
 
 private fun KtParameter.isConfigureAction(): Boolean {
-    return type()?.fqName?.asString() == "org.gradle.api.Action" // is Action
-            && typeParameters.firstOrNull()?.type()?.fqName
+    return type()?.fqName?.asString() == "org.gradle.api.Action" && // is Action
+        typeParameters.firstOrNull()?.type()?.fqName
         ?.asString() == "org.gradle.api.artifacts.ExternalModuleDependency" // is Action<ExternalModuleDependency>
 }

@@ -100,7 +100,6 @@ class ConvertGroovyCopyPasteProcessor : CopyPastePostProcessor<TextBlockTransfer
         return emptyList()
     }
 
-
     override fun processTransferableData(
         project: Project,
         editor: Editor,
@@ -350,4 +349,3 @@ val gradleOfficialPlugins = listOf(
     "google-test",
     "xctest"
 )
-

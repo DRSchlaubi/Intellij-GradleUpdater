@@ -27,6 +27,8 @@ package me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.inco
 import com.intellij.codeInspection.LocalInspectionToolSession
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElementVisitor
+import io.ktor.client.request.forms.*
+import io.ktor.client.utils.*
 import me.schlaubi.intellij_gradle_version_checker.GradleUpdaterBundle
 import me.schlaubi.intellij_gradle_version_checker.dependency_format.dependencyFormat
 import me.schlaubi.intellij_gradle_version_checker.inspection.AbstractBuildScriptInspection

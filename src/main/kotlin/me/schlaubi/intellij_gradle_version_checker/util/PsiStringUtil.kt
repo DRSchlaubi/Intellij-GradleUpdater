@@ -36,13 +36,13 @@ fun KtStringTemplateExpression.isSimple() = entries.size == 1
 /**
  * Returns the value of a string without interpolation
  */
-val KtStringTemplateExpression.simpleValue
+val KtStringTemplateExpression.simpleValue: String
     get() = entries.first().value
 
 /**
  * The value of a string template entry
  */
-val KtStringTemplateEntry.value
+val KtStringTemplateEntry.value: String
     get() = text.removeSurrounding("\"")
 
 /**

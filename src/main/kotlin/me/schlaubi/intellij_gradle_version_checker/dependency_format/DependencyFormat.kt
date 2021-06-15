@@ -24,6 +24,7 @@
 
 package me.schlaubi.intellij_gradle_version_checker.dependency_format
 
+import me.schlaubi.intellij_gradle_version_checker.GradleUpdaterBundle
 import me.schlaubi.intellij_gradle_version_checker.util.calleeFunction
 import me.schlaubi.intellij_gradle_version_checker.util.isSimple
 import me.schlaubi.intellij_gradle_version_checker.util.simpleValue
@@ -40,6 +41,16 @@ val KtCallExpression.dependencyFormat: DependencyFormat?
  * Representation of the different Dependency formats that are available.
  */
 sealed class DependencyFormat {
+
+    /**
+     * A human readable name for the format.
+     */
+    abstract val humanName: String
+
+    /**
+     * An example dependency.
+     */
+    abstract val example: String
 
     /**
      * Checks whether this [KtCallExpression] adds a dependency in the specified format.
@@ -75,6 +86,11 @@ sealed class DependencyFormat {
     abstract fun DependencyDeclaration.generateArguments(factory: KtPsiFactory): KtValueArgumentList
 
     object NotationDependencyFormat : DependencyFormat() {
+
+        override val humanName: String = GradleUpdaterBundle.getMessage("dependency_formats.notation.name")
+
+        override val example: String = GradleUpdaterBundle.getMessage("dependency_formats.notation.example")
+
         override fun KtCallExpression.isFromThisType(): Boolean {
             val function = calleeFunction ?: return false
             val parameters = function.valueParameters
@@ -168,6 +184,10 @@ sealed class DependencyFormat {
     }
 
     object PositionalDependencyFormat : DependencyFormat() {
+
+        override val humanName: String = GradleUpdaterBundle.getMessage("dependency_formats.positional.name")
+        override val example: String = GradleUpdaterBundle.getMessage("dependency_formats.positional.example")
+
         override fun KtCallExpression.isFromThisType(): Boolean {
             if (!isMultiArgumentDeclaration()) return false
 
@@ -203,6 +223,10 @@ sealed class DependencyFormat {
     }
 
     object NamedDependencyFormat : DependencyFormat() {
+
+        override val humanName: String = GradleUpdaterBundle.getMessage("dependency_formats.named.name")
+        override val example: String = GradleUpdaterBundle.getMessage("dependency_formats.named.example")
+
         override fun KtCallExpression.isFromThisType(): Boolean {
             if (!isMultiArgumentDeclaration()) return false
 
@@ -242,6 +266,9 @@ sealed class DependencyFormat {
     }
 
     object SemiNamedDependencyFormat : DependencyFormat() {
+
+        override val humanName: String = "<internal format>"
+        override val example: String = ""
 
         // the biggest concern of in-convertibility is using string templates and no longer being able to distinct
         // group, name and version from each other

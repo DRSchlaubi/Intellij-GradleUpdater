@@ -25,11 +25,13 @@
 package me.schlaubi.intellij_gradle_version_checker
 
 import com.intellij.DynamicBundle
+import org.jetbrains.annotations.PropertyKey
+
 
 /**
  * [DynamicBundle] for messages of this plugin.
  */
 object GradleUpdaterBundle : DynamicBundle("messages.GradleUpdater") {
     @JvmStatic
-    fun getMessage(key: String) = super.getMessage(key)
+    fun getMessage(@PropertyKey(resourceBundle = "messages.GradleUpdater") key: String) = super.getMessage(key)
 }

@@ -28,6 +28,7 @@ import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.SmartPsiElementPointer
+import me.schlaubi.intellij_gradle_version_checker.GradleUpdaterBundle
 import me.schlaubi.intellij_gradle_version_checker.util.toPsiTemplate
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtExpression
@@ -39,7 +40,8 @@ class ReplaceWithKotlinNotationQuickfix(
     private val module: String,
     private val version: SmartPsiElementPointer<KtExpression>?
 ) : LocalQuickFix {
-    override fun getFamilyName(): String = "Replace"
+    override fun getFamilyName(): String =
+        GradleUpdaterBundle.getMessage("inspection.coordinates_on_kotlin_dependency.quickfix.replace")
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
         val factory = KtPsiFactory(project)

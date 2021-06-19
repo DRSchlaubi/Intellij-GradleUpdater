@@ -31,7 +31,7 @@ plugins {
 }
 
 group = "me.schlaubi"
-version = "2.0.0"
+version = "2.0.1"
 
 repositories {
     mavenCentral()
@@ -76,14 +76,8 @@ tasks {
     patchPluginXml {
         changeNotes.set(
             """
-            2.0.0
-            - Add Inspection for manual Kotlin Gradle dependencies
-            - Add inspection for dependency on Kotlin stdlib
-            - Add inspection for inconsistent dependency format usage
-            - Add on-paste converter for Groovy code snippets in .gradle.kts files
-            - Replace plugin icon
-            - Make version notification also use PSI to avoid Properties formatting issues
-            - Make version notification expire after action is taken
+            2.0.1
+            - Fix Gradle version fetching
             """.trimIndent()
         )
     }

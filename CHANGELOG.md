@@ -11,3 +11,4 @@
 - Fix bug when trying to load settings file
 
 ##[Unreleased]
+## [2.0.2]

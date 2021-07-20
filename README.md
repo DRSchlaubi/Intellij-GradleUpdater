@@ -1,8 +1,9 @@
 # Intellij Gradle Updater
-
 Download from Marketplace: https://plugins.jetbrains.com/plugin/15341-gradleupdater
 
+<!-- Plugin description -->
 Intellij plugin which converts Groovy to Kotlin and updates your Gradle version for you
+<!-- Plugin description end -->
 
 ## Convert Gradle to Groovy
 

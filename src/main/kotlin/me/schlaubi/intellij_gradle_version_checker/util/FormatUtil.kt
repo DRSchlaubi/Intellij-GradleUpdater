@@ -37,5 +37,6 @@ val DependencyFormat.name: String
 val Project.dependencyFormat: DependencyFormat
     get() {
         val name = ProjectPersistentGradleVersionSettings.getInstance(this).dependencyFormat
-        return DependencyFormat.all.first { it.name == name }
+        return DependencyFormat.all.firstOrNull { it::class.simpleName == name }
+            ?: DependencyFormat.PositionalDependencyFormat
     }

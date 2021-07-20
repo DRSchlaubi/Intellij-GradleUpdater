@@ -1,5 +1,6 @@
 # IntelliJ Gradle Updater
 
+
 ##[2.0.2]
 
 ### Added
@@ -9,3 +10,4 @@
 ### Fixed
 - Fix bug when trying to load settings file
 
+##[Unreleased]

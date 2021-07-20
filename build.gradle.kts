@@ -24,24 +24,24 @@
 
 plugins {
     java
-    kotlin("jvm") version "1.5.10"
-    kotlin("plugin.serialization") version "1.5.10"
+    kotlin("jvm") version "1.5.21"
+    kotlin("plugin.serialization") version "1.5.21"
     id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
-    id("org.jetbrains.intellij") version "1.0"
+    id("org.jetbrains.intellij") version "1.1.3"
 }
 
 group = "me.schlaubi"
-version = "2.0.1"
+version = "2.0.2"
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx", "kotlinx-serialization-json", "1.2.0")
-    implementation("io.sentry", "sentry", "4.3.0")
+    implementation("org.jetbrains.kotlinx", "kotlinx-serialization-json", "1.2.1")
+    implementation("io.sentry", "sentry", "5.0.1")
 
-    implementation(platform("io.ktor:ktor-bom:1.6.0"))
+    implementation(platform("io.ktor:ktor-bom:1.6.1"))
     implementation("io.ktor", "ktor-client-okhttp")
     implementation("io.ktor", "ktor-client-serialization-jvm")
 }
@@ -57,7 +57,7 @@ tasks {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version.set("2021.1.2")
+    version.set("2021.1.3")
     plugins.set(
         listOf(
             // For gradle support

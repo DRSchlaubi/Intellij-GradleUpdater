@@ -52,6 +52,8 @@ sealed class DependencyFormat {
      */
     abstract val example: String
 
+//    abstract val supportsVersionCatalogs: Boolean
+
     /**
      * Checks whether this [KtCallExpression] adds a dependency in the specified format.
      */
@@ -346,6 +348,6 @@ private fun KtParameter.isAny() =
 
 private fun KtParameter.isConfigureAction(): Boolean {
     return type()?.fqName?.asString() == "org.gradle.api.Action" && // is Action
-        typeParameters.firstOrNull()?.type()?.fqName
-        ?.asString() == "org.gradle.api.artifacts.ExternalModuleDependency" // is Action<ExternalModuleDependency>
+            typeParameters.firstOrNull()?.type()?.fqName
+                ?.asString() == "org.gradle.api.artifacts.ExternalModuleDependency" // is Action<ExternalModuleDependency>
 }

@@ -37,7 +37,7 @@ fun KtStringTemplateExpression.isSimple() = entries.size == 1
  * Returns the value of a string without interpolation
  */
 val KtStringTemplateExpression.simpleValue: String
-    get() = entries.first().value
+    get() = entries.firstOrNull()?.value ?: ""
 
 /**
  * The value of a string template entry

@@ -46,7 +46,7 @@ lateinit var latestGradleVersion: GradleVersion
 
 // https://regex101.com/r/oVpaYd/2
 private val gradleVersionPattern = """([0-9]+)\.([0-9]+)(?:\.([0-9]+))?""".toRegex()
-private const val latestGradleVersionEndpoint = "https://services.gradle.org/versions/all"
+private const val latestGradleVersionEndpoint = "https://services.gradle.org/versions/current"
 private val httpClient = HttpClient {
     install(JsonFeature) {
         val json = kotlinx.serialization.json.Json {
@@ -86,17 +86,12 @@ data class GradleVersion(val major: Int, val minor: Int, val revision: Int?) : C
 }
 
 internal suspend fun fetchGradleVersion() {
-    latestGradleVersion = httpClient.get<List<GradleServiceVersion>>(latestGradleVersionEndpoint)
-        .asSequence()
-        .filter {
-            !it.nightly && !it.snapshot && !it.releaseNightly && !it.activeRc
-        }
-        .mapNotNull { it.version.parseGradleVersion() }
-        .maxOrNull() ?: error("Could not determine latest gradle version")
+    latestGradleVersion = httpClient.get<GradleServiceVersion>(latestGradleVersionEndpoint)
+        .version.parseGradleVersion() ?: error("Could not determine latest gradle version")
 }
 
 /**
- * Github response for latest Gradle release.
+ * Gradle Service response for latest Gradle release.
  */
 @Serializable
 data class GradleServiceVersion(

@@ -31,7 +31,7 @@ plugins {
     kotlin("jvm") version "1.5.21"
     kotlin("plugin.serialization") version "1.5.21"
     id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
-    id("org.jetbrains.intellij") version "1.1.3"
+    id("org.jetbrains.intellij") version "1.1.4"
     id("org.jetbrains.changelog") version "1.1.2"
 }
 

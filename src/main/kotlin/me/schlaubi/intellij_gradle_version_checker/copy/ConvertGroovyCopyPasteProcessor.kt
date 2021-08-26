@@ -24,7 +24,6 @@
 
 package me.schlaubi.intellij_gradle_version_checker.copy
 
-import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.RangeMarker
 import com.intellij.openapi.project.Project

@@ -40,7 +40,6 @@ import org.jetbrains.kotlin.idea.inspections.gradle.getResolvedKotlinGradleVersi
 import org.jetbrains.kotlin.idea.util.module
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtFile
-import org.jetbrains.kotlin.psi.KtStringTemplateExpression
 
 class RedundantVersionInspection : AbstractBuildScriptInspection() {
     override fun buildVisitor(

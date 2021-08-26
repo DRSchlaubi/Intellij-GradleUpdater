@@ -60,7 +60,6 @@ internal class MyTransferableData(val text: String) : TextBlockTransferableData 
     }
 }
 
-
 private fun PsiFile.isGradleFile() = (this as? KtFile)?.resolveImportReference(
     FqName("org.gradle.api.artifacts.dsl.DependencyHandler")
 )?.isNotEmpty() == true
@@ -111,7 +110,6 @@ internal sealed class GradleMigrateCopyPasteProcessor : CopyPastePostProcessor<T
         editor: Editor
     )
 
-
     protected fun <T : Migratable> Iterable<T>.replace(
         project: Project,
         psiFactory: KtPsiFactory,
@@ -136,7 +134,6 @@ internal sealed class GradleMigrateCopyPasteProcessor : CopyPastePostProcessor<T
         }
     }
 }
-
 
 internal interface Migratable {
     val range: IntRange

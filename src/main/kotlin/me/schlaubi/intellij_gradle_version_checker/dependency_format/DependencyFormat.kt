@@ -348,6 +348,6 @@ private fun KtParameter.isAny() =
 
 private fun KtParameter.isConfigureAction(): Boolean {
     return type()?.fqName?.asString() == "org.gradle.api.Action" && // is Action
-            typeParameters.firstOrNull()?.type()?.fqName
-                ?.asString() == "org.gradle.api.artifacts.ExternalModuleDependency" // is Action<ExternalModuleDependency>
+        typeParameters.firstOrNull()?.type()?.fqName
+        ?.asString() == "org.gradle.api.artifacts.ExternalModuleDependency" // is Action<ExternalModuleDependency>
 }

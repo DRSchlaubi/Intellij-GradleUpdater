@@ -42,7 +42,12 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <copyPastePostProcessor
+                id="me.schlaubi.intellij_gradle_version_checker.copy.ConvertGroovyCopyPasteProcessor"
                 implementation="me.schlaubi.intellij_gradle_version_checker.copy.ConvertGroovyCopyPasteProcessor"/>
+        <copyPastePostProcessor
+                order="after me.schlaubi.intellij_gradle_version_checker.copy.ConvertGroovyCopyPasteProcessor"
+                implementation="me.schlaubi.intellij_gradle_version_checker.copy.ConvertDependencyFormatCopyPasteProcessor"/>
+
         <applicationService
                 serviceImplementation="me.schlaubi.intellij_gradle_version_checker.settings.ApplicationPersistentGradleVersionSettings"/>
         <projectService

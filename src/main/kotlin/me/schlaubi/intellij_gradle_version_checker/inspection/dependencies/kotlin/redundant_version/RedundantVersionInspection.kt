@@ -29,11 +29,13 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.SmartPointerManager
+import me.schlaubi.intellij_gradle_version_checker.GradleUpdaterBundle
 import me.schlaubi.intellij_gradle_version_checker.inspection.AbstractBuildScriptInspection
 import me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.DependencyDeclarationVisitor
 import me.schlaubi.intellij_gradle_version_checker.util.calleeFunction
 import me.schlaubi.intellij_gradle_version_checker.util.isSimple
 import me.schlaubi.intellij_gradle_version_checker.util.simpleValue
+import me.schlaubi.intellij_gradle_version_checker.util.stringValue
 import org.jetbrains.kotlin.idea.inspections.gradle.getResolvedKotlinGradleVersion
 import org.jetbrains.kotlin.idea.util.module
 import org.jetbrains.kotlin.psi.KtCallExpression
@@ -54,7 +56,7 @@ class RedundantVersionInspection : AbstractBuildScriptInspection() {
                 if (callee.fqName?.asString() != "org.gradle.kotlin.dsl.kotlin") return
 
                 val version = call.valueArguments.getOrNull(1) ?: return
-                val string = version.firstChild as? KtStringTemplateExpression ?: return
+                val string = version.stringValue ?: return
                 if (!string.isSimple()) return
 
                 val module = element.module ?: return
@@ -63,7 +65,7 @@ class RedundantVersionInspection : AbstractBuildScriptInspection() {
                     val argumentPointer = SmartPointerManager.createPointer(version)
                     holder.registerProblem(
                         string,
-                        "Unnötig",
+                        GradleUpdaterBundle.getMessage("inspection.redundant_ktlib_version.description"),
                         ProblemHighlightType.LIKE_UNUSED_SYMBOL,
                         RemoveRedundantVersionQuickfix(
                             argumentsPointer, argumentPointer

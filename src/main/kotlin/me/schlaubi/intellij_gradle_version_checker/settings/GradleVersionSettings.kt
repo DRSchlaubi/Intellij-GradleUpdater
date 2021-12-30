@@ -24,8 +24,8 @@
 
 package me.schlaubi.intellij_gradle_version_checker.settings
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.PersistentStateComponent
-import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.project.Project
@@ -71,7 +71,7 @@ class ApplicationPersistentGradleVersionSettings :
     AbstractPersistentGradleVersionSettings<ApplicationPersistentGradleVersionSettings>() {
     companion object {
         fun getInstance(): GradleVersionSettings =
-            ServiceManager.getService(ApplicationPersistentGradleVersionSettings::class.java)
+            ApplicationManager.getApplication().getService(ApplicationPersistentGradleVersionSettings::class.java)
     }
 }
 
@@ -94,7 +94,7 @@ class ProjectPersistentGradleVersionSettings :
     companion object {
         @JvmStatic
         fun getInstance(project: Project): GradleVersionSettings =
-            ServiceManager.getService(project, ProjectPersistentGradleVersionSettings::class.java)
+            project.getService(ProjectPersistentGradleVersionSettings::class.java)
     }
 }
 

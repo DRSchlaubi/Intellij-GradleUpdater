@@ -64,6 +64,7 @@ private val httpClient = HttpClient {
  * @property revision the revision version code
  * @see Comparable
  */
+@Suppress("PROVIDED_RUNTIME_TOO_LOW")
 @Serializable(with = GradleVersionSerializer::class)
 data class GradleVersion(val major: Int, val minor: Int, val revision: Int?) : Comparable<GradleVersion> {
     override fun compareTo(other: GradleVersion): Int {
@@ -98,6 +99,7 @@ internal suspend fun fetchGradleVersion() {
 /**
  * Github response for latest Gradle release.
  */
+@Suppress("PROVIDED_RUNTIME_TOO_LOW")
 @Serializable
 data class GradleServiceVersion(
     val version: String,

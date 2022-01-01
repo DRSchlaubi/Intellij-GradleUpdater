@@ -1,9 +1,7 @@
-import org.jetbrains.changelog.markdownToHTML
-
 /*
  * MIT License
  *
- * Copyright (c) 2020 Michael Rittmeister
+ * Copyright (c) 2020-2022 Michael Rittmeister
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +21,8 @@ import org.jetbrains.changelog.markdownToHTML
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
+import org.jetbrains.changelog.markdownToHTML
 
 fun properties(key: String) = project.findProperty(key).toString()
 
@@ -44,7 +44,7 @@ repositories {
 
 dependencies {
     implementation("org.jetbrains.kotlinx", "kotlinx-serialization-json", "1.3.2")
-    implementation("io.sentry", "sentry", "5.5.2")
+    implementation("io.sentry", "sentry", "5.5.0")
 
     implementation(platform("io.ktor:ktor-bom:1.6.7"))
     implementation("io.ktor", "ktor-client-okhttp")
@@ -117,7 +117,6 @@ tasks {
 
 configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
     disabledRules.set(listOf("no-wildcard-imports"))
-    version.set("0.43.2")
 }
 
 java {

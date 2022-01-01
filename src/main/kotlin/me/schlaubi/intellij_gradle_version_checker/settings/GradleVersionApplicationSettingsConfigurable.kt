@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020 Michael Rittmeister
+ * Copyright (c) 2020-2022 Michael Rittmeister
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,13 +24,9 @@
 
 package me.schlaubi.intellij_gradle_version_checker.settings
 
-import com.intellij.openapi.editor.Document
-import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.ui.EditorTextField
 import com.intellij.ui.components.JBCheckBox
 import me.schlaubi.intellij_gradle_version_checker.dependency_format.DependencyFormat
 import java.awt.Dimension
@@ -51,16 +47,14 @@ class ApplicationGradleVersionSettingsConfigurable :
  */
 class ProjectGradleVersionSettingsConfigurable(project: Project) :
     AbstractGradleVersionApplicationSettingsConfigurable(
-        { ProjectPersistentGradleVersionSettings.getInstance(project) },
-        project
+        { ProjectPersistentGradleVersionSettings.getInstance(project) }
     )
 
 /**
  * Base class for [Configurable] configuring [GradleVersionSettings].
  */
 sealed class AbstractGradleVersionApplicationSettingsConfigurable(
-    private val settingsProvider: () -> GradleVersionSettings,
-    private val project: Project? = null
+    private val settingsProvider: () -> GradleVersionSettings
 ) : Configurable {
 
     private val originSettings = settingsProvider()
@@ -78,7 +72,6 @@ sealed class AbstractGradleVersionApplicationSettingsConfigurable(
     ).apply {
         preferredSize = Dimension(200, 25)
     }
-    private var previewBox: EditorTextField? = null
 
     override fun createComponent(): JComponent? = JPanel(FlowLayout(FlowLayout.LEFT)).apply panel@{
         layout = BoxLayout(this@panel, BoxLayout.Y_AXIS)
@@ -129,6 +122,3 @@ sealed class AbstractGradleVersionApplicationSettingsConfigurable(
 
     override fun getDisplayName(): String = "Gradle Version Updater"
 }
-
-private fun String.toDocument(): Document =
-    EditorFactory.getInstance().createDocument(StringUtil.convertLineSeparators(this))

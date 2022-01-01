@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020 Michael Rittmeister
+ * Copyright (c) 2020-2022 Michael Rittmeister
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,6 @@
 
 package me.schlaubi.intellij_gradle_version_checker
 
-import com.intellij.lang.properties.psi.PropertiesFile
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
@@ -32,13 +31,10 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.util.NlsActions
-import com.intellij.psi.PsiManager
-import me.schlaubi.intellij_gradle_version_checker.inspection.wrapper.GradleWrapperVersionInspection
 import me.schlaubi.intellij_gradle_version_checker.settings.ApplicationGradleVersionSettings
 import me.schlaubi.intellij_gradle_version_checker.settings.ProjectPersistentGradleVersionSettings
-import me.schlaubi.intellij_gradle_version_checker.util.extractVersionFromDistributionUrlProperty
+import me.schlaubi.intellij_gradle_version_checker.util.findGradleVersion
 import me.schlaubi.intellij_gradle_version_checker.util.replace
 
 /**
@@ -85,24 +81,10 @@ class UpdateGradleVersionAction(notification: Notification) : ExpiringAction(
 ) {
     override fun perform(e: AnActionEvent) {
         val project = e.project ?: return
-        val gradlePropertiesPath = project
-            .guessProjectDir()
-            ?.findChild("gradle")
-            ?.findChild("wrapper")
-            ?.findChild("gradle-wrapper.properties") ?: return
-
-        val gradlePropertiesFile = PsiManager.getInstance(requireNotNull(e.project))
-            .findFile(gradlePropertiesPath) as? PropertiesFile ?: return
-
-        val property = gradlePropertiesFile
-            .findPropertyByKey(GradleWrapperVersionInspection.WRAPPER_VERSION_PROPERTY) ?: return
-
-        val value = property.value ?: error("Well this is awkward")
-
-        val gradleVersion = extractVersionFromDistributionUrlProperty(value)?.toString() ?: return
+        val (gradleVersion, property) = project.findGradleVersion() ?: return
 
         WriteCommandAction.runWriteCommandAction(project) {
-            property.replace(gradleVersion, latestGradleVersion.toString())
+            property.replace(gradleVersion.toString(), latestGradleVersion.toString())
         }
     }
 }

@@ -2,8 +2,8 @@
 
 ## [Unreleased]
 
+## [2.1.0]
 ### Changed
-
 - Update to IntelliJ 2021.3
 
 ### Fixed
@@ -11,24 +11,19 @@
 - Kotlin format converter triggering when converting Gradle snippets
 
 ## [2.0.4]
-
 ### Changed
-
 - Update to IntelliJ 2021.2
 
 ## [2.0.3]
-
 - Fix compatibility range to include all 2021.1 versions
 - Fix compatibility problems
 
 ## [2.0.2]
-
 ### Added
-
 - Add CI
 
 ### Changed
 - Bump dependencies
+
 ### Fixed
 - Fix bug when trying to load settings file
-

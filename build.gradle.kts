@@ -117,8 +117,11 @@ tasks {
 
 configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
     disabledRules.set(listOf("no-wildcard-imports"))
+    version.set("0.43.2")
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(11))
+    }
 }

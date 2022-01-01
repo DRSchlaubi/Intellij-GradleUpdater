@@ -72,7 +72,6 @@ class ApplicationPersistentGradleVersionSettings :
     companion object {
         fun getInstance(): GradleVersionSettings =
             ApplicationManager.getApplication().getService(ApplicationPersistentGradleVersionSettings::class.java)
-
     }
 }
 

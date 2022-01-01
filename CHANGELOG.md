@@ -1,6 +1,8 @@
 # IntelliJ Gradle Updater
 
 ## [Unreleased]
+### Changed
+- Update to IntelliJ 2021.3
 ## [2.0.4]
 ### Changed
 - Update to IntelliJ 2021.2

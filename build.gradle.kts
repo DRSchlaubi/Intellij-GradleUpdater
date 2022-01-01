@@ -28,11 +28,11 @@ fun properties(key: String) = project.findProperty(key).toString()
 
 plugins {
     java
-    kotlin("jvm") version "1.5.30"
-    kotlin("plugin.serialization") version "1.5.30"
-    id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
-    id("org.jetbrains.intellij") version "1.1.3"
-    id("org.jetbrains.changelog") version "1.3.0"
+    kotlin("jvm") version "1.6.10"
+    kotlin("plugin.serialization") version "1.6.10"
+    id("org.jlleitschuh.gradle.ktlint") version "10.2.1"
+    id("org.jetbrains.intellij") version "1.3.0"
+    id("org.jetbrains.changelog") version "1.3.1"
 }
 
 group = properties("pluginGroup")
@@ -43,10 +43,10 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx", "kotlinx-serialization-json", "1.2.2")
-    implementation("io.sentry", "sentry", "5.1.2")
+    implementation("org.jetbrains.kotlinx", "kotlinx-serialization-json", "1.3.2")
+    implementation("io.sentry", "sentry", "5.5.2")
 
-    implementation(platform("io.ktor:ktor-bom:1.6.3"))
+    implementation(platform("io.ktor:ktor-bom:1.6.7"))
     implementation("io.ktor", "ktor-client-okhttp")
     implementation("io.ktor", "ktor-client-serialization-jvm")
 }
@@ -117,6 +117,7 @@ tasks {
 
 configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
     disabledRules.set(listOf("no-wildcard-imports"))
+    version.set("0.43.2")
 }
 
 java {

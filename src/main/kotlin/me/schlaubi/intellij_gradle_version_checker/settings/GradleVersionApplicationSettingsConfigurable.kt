@@ -24,13 +24,9 @@
 
 package me.schlaubi.intellij_gradle_version_checker.settings
 
-import com.intellij.openapi.editor.Document
-import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
-import com.intellij.openapi.util.text.StringUtil
-import com.intellij.ui.EditorTextField
 import com.intellij.ui.components.JBCheckBox
 import me.schlaubi.intellij_gradle_version_checker.dependency_format.DependencyFormat
 import java.awt.Dimension
@@ -126,4 +122,3 @@ sealed class AbstractGradleVersionApplicationSettingsConfigurable(
 
     override fun getDisplayName(): String = "Gradle Version Updater"
 }
-

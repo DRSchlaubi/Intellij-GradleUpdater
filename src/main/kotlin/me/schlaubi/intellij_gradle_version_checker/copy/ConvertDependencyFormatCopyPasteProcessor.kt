@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020 Michael Rittmeister
+ * Copyright (c) 2020-2022 Michael Rittmeister
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,9 +30,9 @@ import com.intellij.openapi.project.Project
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtPsiFactory
 
-// https://regex101.com/r/YS2HLg/1
+// https://regex101.com/r/NN4aRT/1
 private val KOTLIN_DEPENDENCY_DECLARATION =
-    """(\w+)(?:\(|\s+)(?:group\s*=\s*)?["'](.+?)(?::|["'],\s*(?:artifact\s*=\s*)?["'])(.+?)(?:(?::|["'],\s*(?:version\s*=\s*)?["'])(.*))?["']\)?""".toRegex()
+    """(\w+)\((?:group\s*=\s*)?["'](.+?)(?::|["'],\s*(?:artifact\s*=\s*)?["'])(.+?)(?:(?::|["'],\s*(?:version\s*=\s*)?["'])(.*))?["']\)?""".toRegex()
 
 internal class ConvertDependencyFormatCopyPasteProcessor : GradleMigrateCopyPasteProcessor() {
     override fun processGradleData(

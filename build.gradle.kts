@@ -1,9 +1,7 @@
-import org.jetbrains.changelog.markdownToHTML
-
 /*
  * MIT License
  *
- * Copyright (c) 2020 Michael Rittmeister
+ * Copyright (c) 2020-2022 Michael Rittmeister
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,13 +22,15 @@ import org.jetbrains.changelog.markdownToHTML
  * SOFTWARE.
  */
 
+import org.jetbrains.changelog.markdownToHTML
+
 fun properties(key: String) = project.findProperty(key).toString()
 
 plugins {
     java
-    kotlin("jvm") version "1.6.0"
-    kotlin("plugin.serialization") version "1.6.0"
-    id("org.jlleitschuh.gradle.ktlint") version "10.2.0"
+    kotlin("jvm") version "1.6.10"
+    kotlin("plugin.serialization") version "1.6.10"
+    id("org.jlleitschuh.gradle.ktlint") version "10.2.1"
     id("org.jetbrains.intellij") version "1.3.0"
     id("org.jetbrains.changelog") version "1.3.1"
 }
@@ -43,10 +43,10 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx", "kotlinx-serialization-json", "1.3.1")
-    implementation("io.sentry", "sentry", "5.4.3")
+    implementation("org.jetbrains.kotlinx", "kotlinx-serialization-json", "1.3.2")
+    implementation("io.sentry", "sentry", "5.5.0")
 
-    implementation(platform("io.ktor:ktor-bom:1.6.6"))
+    implementation(platform("io.ktor:ktor-bom:1.6.7"))
     implementation("io.ktor", "ktor-client-okhttp")
     implementation("io.ktor", "ktor-client-serialization-jvm")
 }
@@ -117,7 +117,6 @@ tasks {
 
 configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
     disabledRules.set(listOf("no-wildcard-imports"))
-    version.set("0.43.2")
 }
 
 java {

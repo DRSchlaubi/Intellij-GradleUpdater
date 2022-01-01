@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020 Michael Rittmeister
+ * Copyright (c) 2020-2022 Michael Rittmeister
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,9 +39,9 @@ import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtPsiFactory
 import org.jetbrains.kotlin.psi.psiUtil.elementsInRange
 
-// https://regex101.com/r/kZ258U/5
+// https://regex101.com/r/kZ258U/6
 private val DEPENDENCY_DECLARATION_REGEX =
-    """(\w+)\s+(?:group:\s*)?["']([^"':]+)(?::|["'],\s*(?:artifact:\s*)?['"])([^"':]+)(?::|['"],\s*(?:version:\s*)?['"])?([^"':]+)?['"]""".toRegex()
+    """(\w+)\s+(?:group:\s*)?["']([^"':]+)(?::|["'],\s*(?:(?:artifact|name):\s*)?['"])([^"':]+)(?::|['"],\s*(?:version:\s*)?['"])?([^"':]+)?['"]""".toRegex()
 
 // https://regex101.com/r/lEKNuH/1/
 private val PLUGIN_DECLARATION_REGEX =

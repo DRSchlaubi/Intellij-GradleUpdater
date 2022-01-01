@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020 Michael Rittmeister
+ * Copyright (c) 2020-2022 Michael Rittmeister
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,13 @@
 
 package me.schlaubi.intellij_gradle_version_checker.util
 
+import com.intellij.lang.properties.IProperty
+import com.intellij.lang.properties.psi.PropertiesFile
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.guessProjectDir
+import com.intellij.psi.PsiManager
 import me.schlaubi.intellij_gradle_version_checker.GradleVersion
+import me.schlaubi.intellij_gradle_version_checker.inspection.wrapper.GradleWrapperVersionInspection
 import me.schlaubi.intellij_gradle_version_checker.parseGradleVersion
 
 /*
@@ -60,4 +66,23 @@ fun extractVersionFromDistributionUrlProperty(property: String): GradleVersion? 
     val (versionName /*, type */) = version.split("-")
 
     return versionName.parseGradleVersion()
+}
+
+internal fun Project.findGradleVersion(): Pair<GradleVersion, IProperty>? {
+    val gradlePropertiesPath =
+        guessProjectDir()
+            ?.findChild("gradle")
+            ?.findChild("wrapper")
+            ?.findChild("gradle-wrapper.properties") ?: return null
+
+    val gradlePropertiesFile = PsiManager.getInstance(requireNotNull(this))
+        .findFile(gradlePropertiesPath) as? PropertiesFile ?: return null
+
+    val property = gradlePropertiesFile
+        .findPropertyByKey(GradleWrapperVersionInspection.WRAPPER_VERSION_PROPERTY) ?: return null
+
+    val value = property.value ?: error("Well this is awkward")
+
+    val version = extractVersionFromDistributionUrlProperty(value) ?: return null
+    return version to property
 }

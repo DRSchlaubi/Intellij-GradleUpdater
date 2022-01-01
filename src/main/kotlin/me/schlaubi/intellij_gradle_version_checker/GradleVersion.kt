@@ -98,7 +98,7 @@ internal suspend fun fetchGradleVersion() {
 /**
  * Github response for latest Gradle release.
  */
-@Serializable
+//@Serializable
 data class GradleServiceVersion(
     val version: String,
     val buildTime: String,

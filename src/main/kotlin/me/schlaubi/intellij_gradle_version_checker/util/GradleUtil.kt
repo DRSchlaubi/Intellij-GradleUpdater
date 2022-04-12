@@ -26,9 +26,36 @@ package me.schlaubi.intellij_gradle_version_checker.util
 
 import com.intellij.openapi.externalSystem.autoimport.ExternalSystemProjectTracker
 import com.intellij.openapi.project.Project
+import com.intellij.psi.util.PsiTreeUtil
+import org.jetbrains.kotlin.descriptors.VariableDescriptor
+import org.jetbrains.kotlin.idea.refactoring.fqName.fqName
+import org.jetbrains.kotlin.idea.references.resolveMainReferenceToDescriptors
+import org.jetbrains.kotlin.psi.KtCallExpression
+import org.jetbrains.kotlin.psi.KtUserType
+import org.jetbrains.plugins.gradle.settings.GradleExtensionsSettings
 
 /**
  * Invokes a IntelliJ Gradle sync.
  */
 @Suppress("UnstableApiUsage")
 fun Project.refreshGradle() = ExternalSystemProjectTracker.getInstance(this).scheduleProjectRefresh()
+
+fun KtCallExpression.isDependencyDeclaration(
+    gradleExtensionsSettings: GradleExtensionsSettings.GradleExtensionsData? = null
+): Boolean {
+    val callee = calleeFunction
+    if (callee == null) { // Custom declarations
+        val descriptor = calleeExpression?.resolveMainReferenceToDescriptors()?.firstOrNull() as? VariableDescriptor
+            ?: return false
+
+        return descriptor.type.fqName?.asString() == "org.gradle.api.artifacts.Configuration"
+    } else if (callee.greenStub?.isExtension() == true) { // built-ins
+        val children = PsiTreeUtil.findChildrenOfType(callee, KtUserType::class.java).asSequence().map { it.text }
+        return children.any {
+            it == "org.gradle.api.artifacts.dsl.DependencyHandler"
+        } && (gradleExtensionsSettings == null || callee.name in gradleExtensionsSettings.configurations.keys)
+    }
+
+    return false
+}
+

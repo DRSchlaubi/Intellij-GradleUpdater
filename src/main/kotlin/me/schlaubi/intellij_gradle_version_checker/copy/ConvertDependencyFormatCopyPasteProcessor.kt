@@ -29,6 +29,7 @@ import com.intellij.openapi.editor.RangeMarker
 import com.intellij.openapi.project.Project
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtPsiFactory
+import org.jetbrains.plugins.gradle.settings.GradleExtensionsSettings
 
 // https://regex101.com/r/NN4aRT/1
 private val KOTLIN_DEPENDENCY_DECLARATION =
@@ -39,6 +40,7 @@ internal class ConvertDependencyFormatCopyPasteProcessor : GradleMigrateCopyPast
         text: String,
         bounds: RangeMarker,
         targetFile: KtFile,
+        gradleExtensionsSettings: GradleExtensionsSettings.GradleExtensionsData,
         project: Project,
         editor: Editor
     ) {
@@ -59,7 +61,8 @@ internal class ConvertDependencyFormatCopyPasteProcessor : GradleMigrateCopyPast
                 }
             }
 
-        kotlinDependencyDeclarations.asIterable().replace(project, psiFactory, editor.document, bounds.startOffset)
+        kotlinDependencyDeclarations.asIterable()
+            .replace(project, psiFactory, targetFile, editor.document, bounds.startOffset)
     }
 }
 

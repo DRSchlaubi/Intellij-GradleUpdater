@@ -38,6 +38,7 @@ import org.jetbrains.kotlin.psi.KtConstantExpression
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtPsiFactory
 import org.jetbrains.kotlin.psi.psiUtil.elementsInRange
+import org.jetbrains.plugins.gradle.settings.GradleExtensionsSettings
 
 // https://regex101.com/r/kZ258U/6
 private val DEPENDENCY_DECLARATION_REGEX =
@@ -53,6 +54,7 @@ internal class ConvertGroovyCopyPasteProcessor : GradleMigrateCopyPasteProcessor
         text: String,
         bounds: RangeMarker,
         targetFile: KtFile,
+        gradleExtensionsSettings: GradleExtensionsSettings.GradleExtensionsData,
         project: Project,
         editor: Editor
     ) {
@@ -76,7 +78,13 @@ internal class ConvertGroovyCopyPasteProcessor : GradleMigrateCopyPasteProcessor
         if (!confirmConversion(project)) return
 
         val psiFactory = KtPsiFactory(project)
-        end = items.replace(project, psiFactory, editor.document, bounds.startOffset)
+        end = items.replace(
+            project,
+            psiFactory,
+            targetFile,
+            editor.document,
+            bounds.startOffset
+        )
 
         if (items.isNotEmpty()) {
             targetFile.commitAndUnblockDocument() // commit original changes to not re migrate "/'

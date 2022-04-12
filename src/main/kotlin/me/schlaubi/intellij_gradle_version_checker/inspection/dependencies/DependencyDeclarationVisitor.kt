@@ -26,52 +26,30 @@ package me.schlaubi.intellij_gradle_version_checker.inspection.dependencies
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
-import com.intellij.psi.util.PsiTreeUtil
-import me.schlaubi.intellij_gradle_version_checker.util.calleeFunction
-import org.jetbrains.kotlin.descriptors.VariableDescriptor
-import org.jetbrains.kotlin.idea.refactoring.fqName.fqName
-import org.jetbrains.kotlin.idea.references.resolveMainReferenceToDescriptors
+import me.schlaubi.intellij_gradle_version_checker.util.isDependencyDeclaration
 import org.jetbrains.kotlin.idea.util.module
 import org.jetbrains.kotlin.psi.KtCallExpression
-import org.jetbrains.kotlin.psi.KtUserType
 import org.jetbrains.plugins.gradle.settings.GradleExtensionsSettings
 
 abstract class DependencyDeclarationVisitor(private val ignoreConfigurations: Boolean) : PsiElementVisitor() {
 
-    private lateinit var gradleExtensionsSettings: GradleExtensionsSettings.GradleExtensionsData
+    private var gradleExtensionsSettings: GradleExtensionsSettings.GradleExtensionsData? = null
 
     override fun visitElement(element: PsiElement) {
         val module = element.module ?: return
         if (!element.containingFile.name.endsWith(".kts") || element !is KtCallExpression) return
 
-        if (!ignoreConfigurations && !::gradleExtensionsSettings.isInitialized) {
-            val extensions = GradleExtensionsSettings.getInstance(element.project).getExtensionsFor(module) ?: return
+        if (!ignoreConfigurations && gradleExtensionsSettings == null) {
+            val extensions = GradleExtensionsSettings.getInstance(element.project)
+                .getExtensionsFor(module) ?: return
 
             gradleExtensionsSettings = extensions
         }
 
-        if (element.isDependencyDeclaration()) {
+        if (element.isDependencyDeclaration(gradleExtensionsSettings)) {
             visitDependencyDeclaration(element)
         }
     }
 
     abstract fun visitDependencyDeclaration(element: KtCallExpression)
-
-    private fun KtCallExpression.isDependencyDeclaration(): Boolean {
-        val callee = calleeFunction
-        if (callee == null) { // Custom declarations
-            val descriptor = calleeExpression?.resolveMainReferenceToDescriptors()?.firstOrNull() as? VariableDescriptor
-                ?: return false
-
-            return descriptor.type.fqName?.asString() == "org.gradle.api.artifacts.Configuration"
-        } else if (callee.greenStub?.isExtension() == true) { // built-ins
-            val children = PsiTreeUtil.findChildrenOfType(callee, KtUserType::class.java).asSequence().map { it.text }
-            return children.any {
-                it == "org.gradle.api.artifacts.dsl.DependencyHandler"
-            } &&
-                (ignoreConfigurations || callee.name in gradleExtensionsSettings.configurations.keys)
-        }
-
-        return false
-    }
 }

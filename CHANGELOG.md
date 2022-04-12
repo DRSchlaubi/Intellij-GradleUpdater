@@ -1,6 +1,13 @@
 # IntelliJ Gradle Updater
 
 ## [Unreleased]
+### Changes
+- Upgrade to Kotlin 1.6.20
+- Upgrade to Ktor 2.0.0
+- Upgrade to IntelliJ 2022.1
+
+### Fixed
+- Fix issue of Plugin detecting dependency formats false positively (maven("https://abc.de") -> maven("http", "//abc.de")
 
 ## [2.1.0]
 ### Changed

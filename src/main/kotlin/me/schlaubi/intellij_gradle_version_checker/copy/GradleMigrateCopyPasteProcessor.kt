@@ -36,13 +36,18 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
+import com.intellij.psi.util.findParentOfType
 import me.schlaubi.intellij_gradle_version_checker.dependency_format.DependencyDeclaration
+import me.schlaubi.intellij_gradle_version_checker.util.calleeFunction
 import me.schlaubi.intellij_gradle_version_checker.util.dependencyFormat
 import org.jetbrains.kotlin.idea.caches.resolve.resolveImportReference
 import org.jetbrains.kotlin.idea.util.application.runWriteAction
+import org.jetbrains.kotlin.idea.util.module
 import org.jetbrains.kotlin.name.FqName
+import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtPsiFactory
+import org.jetbrains.plugins.gradle.settings.GradleExtensionsSettings
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.Transferable
 
@@ -99,13 +104,17 @@ internal sealed class GradleMigrateCopyPasteProcessor : CopyPastePostProcessor<T
         val data = values.single() as MyTransferableData
         val text = TextBlockTransferable.convertLineSeparators(editor, data.text, values)
 
-        processGradleData(text, bounds, targetFile, project, editor)
+        val extensions = GradleExtensionsSettings.getInstance(project)
+            .getExtensionsFor(targetFile.module) ?: return
+
+        processGradleData(text, bounds, targetFile, extensions, project, editor)
     }
 
     abstract fun processGradleData(
         text: String,
         bounds: RangeMarker,
         targetFile: KtFile,
+        gradleExtensionsSettings: GradleExtensionsSettings.GradleExtensionsData,
         project: Project,
         editor: Editor
     )
@@ -113,6 +122,7 @@ internal sealed class GradleMigrateCopyPasteProcessor : CopyPastePostProcessor<T
     protected fun <T : Migratable> Iterable<T>.replace(
         project: Project,
         psiFactory: KtPsiFactory,
+        file: PsiFile,
         document: Document,
         start: Int,
     ) = runWriteAction {
@@ -123,17 +133,25 @@ internal sealed class GradleMigrateCopyPasteProcessor : CopyPastePostProcessor<T
             }
             val offset = migrated.length - (range.last - range.first)
             val realRange = range.withOffset(startOffset)
+            val psiAtOffset = file.findElementAt(realRange.first)
+            val call = psiAtOffset?.findParentOfType<KtCallExpression>()
 
-            document.replaceString(
-                realRange.first,
-                realRange.last + 1, // End is exclusive
-                migrated
-            )
+            if (call?.isGradleDependenciesCall() == true) {
+                document.replaceString(
+                    realRange.first,
+                    realRange.last + 1, // End is exclusive
+                    migrated
+                )
+            }
 
             startOffset + offset - 1
         }
     }
 }
+
+private fun KtCallExpression.isGradleDependenciesCall(): Boolean = calleeFunction
+    ?.fqName
+    .toString() == "org.gradle.kotlin.dsl.dependencies"
 
 internal interface Migratable {
     val range: IntRange

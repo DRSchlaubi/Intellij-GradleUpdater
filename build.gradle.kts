@@ -28,10 +28,10 @@ fun properties(key: String) = project.findProperty(key).toString()
 
 plugins {
     java
-    kotlin("jvm") version "1.6.10"
-    kotlin("plugin.serialization") version "1.6.10"
+    kotlin("jvm") version "1.6.20"
+    kotlin("plugin.serialization") version "1.6.20"
     id("org.jlleitschuh.gradle.ktlint") version "10.2.1"
-    id("org.jetbrains.intellij") version "1.3.0"
+    id("org.jetbrains.intellij") version "1.5.2"
     id("org.jetbrains.changelog") version "1.3.1"
 }
 
@@ -43,19 +43,21 @@ repositories {
 }
 
 dependencies {
+    implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-core", "1.6.1")
     implementation("org.jetbrains.kotlinx", "kotlinx-serialization-json", "1.3.2")
-    implementation("io.sentry", "sentry", "5.5.0")
+    implementation("io.sentry", "sentry", "5.7.2")
 
-    implementation(platform("io.ktor:ktor-bom:1.6.7"))
+    implementation(platform("io.ktor:ktor-bom:2.0.0"))
     implementation("io.ktor", "ktor-client-okhttp")
-    implementation("io.ktor", "ktor-client-serialization-jvm")
+    implementation("io.ktor", "ktor-client-content-negotiation")
+    implementation("io.ktor", "ktor-serialization-kotlinx-json")
 }
 
 tasks {
     compileKotlin {
         kotlinOptions {
             jvmTarget = "11"
-            freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
+            freeCompilerArgs = freeCompilerArgs + "-opt-in=kotlin.RequiresOptIn"
         }
     }
 }

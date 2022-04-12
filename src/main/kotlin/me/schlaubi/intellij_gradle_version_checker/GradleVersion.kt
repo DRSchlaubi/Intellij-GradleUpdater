@@ -25,9 +25,10 @@
 package me.schlaubi.intellij_gradle_version_checker
 
 import io.ktor.client.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
+import io.ktor.client.call.*
+import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
+import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -45,15 +46,16 @@ import me.schlaubi.intellij_gradle_version_checker.gradle_inspector.GradleVersio
 lateinit var latestGradleVersion: GradleVersion
     private set
 
-// https://regex101.com/r/oVpaYd/2
-private val gradleVersionPattern = """([0-9]+)\.([0-9]+)(?:\.([0-9]+))?""".toRegex()
+// https://regex101.com/r/oVpaYd/3
+private val gradleVersionPattern = """(\d+)\.(\d+)(?:\.(\d+))?""".toRegex()
 private const val latestGradleVersionEndpoint = "https://services.gradle.org/versions/all"
 private val httpClient = HttpClient {
-    install(JsonFeature) {
+    install(ContentNegotiation) {
         val json = kotlinx.serialization.json.Json {
             ignoreUnknownKeys = true
         }
-        serializer = KotlinxSerializer(json)
+
+        json(json)
     }
 }
 
@@ -88,7 +90,8 @@ data class GradleVersion(val major: Int, val minor: Int, val revision: Int?) : C
 }
 
 internal suspend fun fetchGradleVersion() {
-    latestGradleVersion = httpClient.get<List<GradleServiceVersion>>(latestGradleVersionEndpoint)
+    latestGradleVersion = httpClient.get(latestGradleVersionEndpoint)
+        .body<List<GradleServiceVersion>>()
         .asSequence()
         .filter {
             !it.nightly && !it.snapshot && !it.releaseNightly && !it.activeRc

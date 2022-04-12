@@ -58,4 +58,3 @@ fun KtCallExpression.isDependencyDeclaration(
 
     return false
 }
-

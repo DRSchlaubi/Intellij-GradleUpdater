@@ -1,6 +1,8 @@
 # IntelliJ Gradle Updater
 
 ## [Unreleased]
+
+## [2.2.0]
 ### Changes
 - Upgrade to Kotlin 1.6.20
 - Upgrade to Ktor 2.0.0

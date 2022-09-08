@@ -1,7 +1,8 @@
 # IntelliJ Gradle Updater
 
 ## [Unreleased]
-# Fixed
+
+## [2.3.0]
 - No longer use internal IntelliJ API (Fix #23)
 - Upgrade Kotlin to 1.7.10
 - Upgrade ktor to 2.1.1

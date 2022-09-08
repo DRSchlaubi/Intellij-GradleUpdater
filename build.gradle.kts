@@ -28,10 +28,10 @@ fun properties(key: String) = project.findProperty(key).toString()
 
 plugins {
     java
-    kotlin("jvm") version "1.6.20"
-    kotlin("plugin.serialization") version "1.6.20"
-    id("org.jlleitschuh.gradle.ktlint") version "10.2.1"
-    id("org.jetbrains.intellij") version "1.5.2"
+    kotlin("jvm") version "1.7.10"
+    kotlin("plugin.serialization") version "1.7.10"
+    id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
+    id("org.jetbrains.intellij") version "1.9.0"
     id("org.jetbrains.changelog") version "1.3.1"
 }
 
@@ -43,11 +43,11 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-core", "1.6.1")
-    implementation("org.jetbrains.kotlinx", "kotlinx-serialization-json", "1.3.2")
-    implementation("io.sentry", "sentry", "5.7.2")
+    implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-core", "1.6.4")
+    implementation("org.jetbrains.kotlinx", "kotlinx-serialization-json", "1.4.0")
+    implementation("io.sentry", "sentry", "6.4.1")
 
-    implementation(platform("io.ktor:ktor-bom:2.0.0"))
+    implementation(platform("io.ktor:ktor-bom:2.1.1"))
     implementation("io.ktor", "ktor-client-okhttp")
     implementation("io.ktor", "ktor-client-content-negotiation")
     implementation("io.ktor", "ktor-serialization-kotlinx-json")
@@ -56,7 +56,7 @@ dependencies {
 tasks {
     compileKotlin {
         kotlinOptions {
-            jvmTarget = "11"
+            jvmTarget = "17"
             freeCompilerArgs = freeCompilerArgs + "-opt-in=kotlin.RequiresOptIn"
         }
     }
@@ -123,6 +123,6 @@ configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(11))
+        languageVersion.set(JavaLanguageVersion.of(17))
     }
 }

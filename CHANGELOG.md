@@ -1,6 +1,15 @@
 # IntelliJ Gradle Updater
 
 ## [Unreleased]
+# Fixed
+- No longer use internal IntelliJ API (Fix #23)
+- Upgrade Kotlin to 1.7.10
+- Upgrade ktor to 2.1.1
+- Upgrade IntelliJ to 2022.2
+- Upgrade JDK to 17
+- Upgrade kotlinx.serialization to 1.4.0
+- Upgrade kotlinx.coroutines to 1.6.4
+- Upgrade Sentry to 6.4.1
 
 ## [2.2.0]
 ### Changes

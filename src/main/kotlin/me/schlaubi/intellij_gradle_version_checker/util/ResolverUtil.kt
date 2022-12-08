@@ -24,7 +24,7 @@
 
 package me.schlaubi.intellij_gradle_version_checker.util
 
-import org.jetbrains.kotlin.nj2k.postProcessing.resolve
+import org.jetbrains.kotlin.idea.references.mainReference
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtReferenceExpression
@@ -33,4 +33,4 @@ import org.jetbrains.kotlin.psi.KtReferenceExpression
  * The [KtNamedFunction] that got called by this [KtCallExpression].
  */
 val KtCallExpression.calleeFunction: KtNamedFunction?
-    get() = ((calleeExpression as? KtReferenceExpression)?.resolve() as? KtNamedFunction)
+    get() = ((calleeExpression as? KtReferenceExpression)?.let { mainReference.resolve() } as? KtNamedFunction)

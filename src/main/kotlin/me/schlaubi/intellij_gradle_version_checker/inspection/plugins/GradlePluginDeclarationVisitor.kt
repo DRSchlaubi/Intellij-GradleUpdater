@@ -26,7 +26,7 @@ package me.schlaubi.intellij_gradle_version_checker.inspection.plugins
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
-import org.jetbrains.kotlin.nj2k.postProcessing.resolve
+import org.jetbrains.kotlin.idea.references.mainReference
 import org.jetbrains.kotlin.psi.*
 
 abstract class GradlePluginDeclarationVisitor : PsiElementVisitor() {
@@ -35,7 +35,7 @@ abstract class GradlePluginDeclarationVisitor : PsiElementVisitor() {
     override fun visitElement(element: PsiElement) {
         if (element !is KtCallExpression) return
         val function =
-            ((element.calleeExpression as? KtReferenceExpression)?.resolve() as? KtNamedFunction) ?: return
+            ((element.calleeExpression as? KtReferenceExpression)?.mainReference?.resolve() as? KtNamedFunction) ?: return
         if (!function.isPluginSpecDeclaration()) return
         val pluginId = element.extractPluginId() ?: return
 

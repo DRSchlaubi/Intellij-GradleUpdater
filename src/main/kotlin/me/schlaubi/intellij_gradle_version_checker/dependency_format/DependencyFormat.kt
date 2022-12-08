@@ -29,9 +29,10 @@ import me.schlaubi.intellij_gradle_version_checker.util.calleeFunction
 import me.schlaubi.intellij_gradle_version_checker.util.isSimple
 import me.schlaubi.intellij_gradle_version_checker.util.simpleValue
 import me.schlaubi.intellij_gradle_version_checker.util.toPsiTemplate
+import org.jetbrains.kotlin.descriptors.CallableDescriptor
+import org.jetbrains.kotlin.idea.caches.resolve.resolveToDescriptorIfAny
 import org.jetbrains.kotlin.idea.refactoring.fqName.fqName
 import org.jetbrains.kotlin.name.Name
-import org.jetbrains.kotlin.nj2k.postProcessing.type
 import org.jetbrains.kotlin.psi.*
 
 val KtCallExpression.dependencyFormat: DependencyFormat?
@@ -341,13 +342,14 @@ private fun KtCallExpression.isMultiArgumentDeclaration(): Boolean {
 }
 
 private fun KtParameter.isString() =
-    type()?.fqName?.asString() == "kotlin.String"
+    (resolveToDescriptorIfAny() as? CallableDescriptor)?.returnType?.fqName?.asString() == "kotlin.String"
 
 private fun KtParameter.isAny() =
-    type()?.fqName?.asString() == "kotlin.Any"
+    (resolveToDescriptorIfAny() as? CallableDescriptor)?.returnType?.fqName?.asString() == "kotlin.Any"
 
 private fun KtParameter.isConfigureAction(): Boolean {
-    return type()?.fqName?.asString() == "org.gradle.api.Action" && // is Action
-        typeParameters.firstOrNull()?.type()?.fqName
+    return (resolveToDescriptorIfAny() as? CallableDescriptor)?.returnType?.fqName?.asString() == "org.gradle.api.Action" && // is Action
+        typeParameters.firstOrNull()
+        ?.let { (resolveToDescriptorIfAny() as? CallableDescriptor)?.returnType }?.fqName
         ?.asString() == "org.gradle.api.artifacts.ExternalModuleDependency" // is Action<ExternalModuleDependency>
 }

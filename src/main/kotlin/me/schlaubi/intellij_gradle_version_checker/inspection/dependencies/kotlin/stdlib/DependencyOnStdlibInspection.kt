@@ -35,7 +35,7 @@ import me.schlaubi.intellij_gradle_version_checker.inspection.dependencies.Depen
 import me.schlaubi.intellij_gradle_version_checker.util.calleeFunction
 import me.schlaubi.intellij_gradle_version_checker.util.isSimple
 import me.schlaubi.intellij_gradle_version_checker.util.simpleValue
-import org.jetbrains.kotlin.idea.groovy.inspections.getResolvedKotlinGradleVersion
+import org.jetbrains.kotlin.idea.groovy.inspections.findResolvedKotlinGradleVersion
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtStringTemplateExpression
@@ -47,7 +47,7 @@ class DependencyOnStdlibInspection : AbstractBuildScriptInspection() {
         isOnTheFly: Boolean,
         session: LocalInspectionToolSession
     ): PsiElementVisitor {
-        val version = getResolvedKotlinGradleVersion(session.file) ?: return PsiElementVisitor.EMPTY_VISITOR
+        val version = findResolvedKotlinGradleVersion(session.file)?.rawVersion ?: return PsiElementVisitor.EMPTY_VISITOR
         val (major, minor) = version.split(".")
         return if (major.toInt() > 1 || minor.toInt() >= 4) {
             super.buildVisitor(holder, isOnTheFly, session)

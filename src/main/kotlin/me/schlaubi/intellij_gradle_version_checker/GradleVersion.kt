@@ -26,6 +26,7 @@ package me.schlaubi.intellij_gradle_version_checker
 
 import io.ktor.client.*
 import io.ktor.client.call.*
+import io.ktor.client.engine.okhttp.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.serialization.kotlinx.json.*
@@ -49,7 +50,7 @@ lateinit var latestGradleVersion: GradleVersion
 // https://regex101.com/r/oVpaYd/3
 private val gradleVersionPattern = """(\d+)\.(\d+)(?:\.(\d+))?""".toRegex()
 private const val latestGradleVersionEndpoint = "https://services.gradle.org/versions/all"
-private val httpClient = HttpClient {
+private val httpClient = HttpClient(OkHttp) {
     install(ContentNegotiation) {
         val json = kotlinx.serialization.json.Json {
             ignoreUnknownKeys = true

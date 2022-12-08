@@ -36,8 +36,8 @@ import me.schlaubi.intellij_gradle_version_checker.util.equalsString
 import me.schlaubi.intellij_gradle_version_checker.util.isSimple
 import me.schlaubi.intellij_gradle_version_checker.util.simpleValue
 import me.schlaubi.intellij_gradle_version_checker.util.startsWith
-import org.jetbrains.kotlin.idea.groovy.inspections.getResolvedKotlinGradleVersion
-import org.jetbrains.kotlin.idea.util.module
+import org.jetbrains.kotlin.idea.base.util.module
+import org.jetbrains.kotlin.idea.groovy.inspections.findResolvedKotlinGradleVersion
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtStringTemplateExpression
@@ -72,7 +72,7 @@ class KotlinInspectionWithCoordinatesInspection : AbstractBuildScriptInspection(
                     val versionsSimple = (version as? KtStringTemplateExpression)?.isSimple() == true
 
                     // I literally spent hrs searching for this function
-                    val gradlePluginVersion by lazy { getResolvedKotlinGradleVersion(psiModule) }
+                    val gradlePluginVersion by lazy { findResolvedKotlinGradleVersion(psiModule)?.rawVersion }
                     val versionExpression =
                         if (versionsSimple && (version as KtStringTemplateExpression).simpleValue == gradlePluginVersion) {
                             null

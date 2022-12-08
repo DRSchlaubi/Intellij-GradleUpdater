@@ -32,7 +32,7 @@ import com.intellij.psi.util.PsiTreeUtil
 import me.schlaubi.intellij_gradle_version_checker.KtsPasteFromGroovyDialog
 import me.schlaubi.intellij_gradle_version_checker.settings.ProjectPersistentGradleVersionSettings
 import org.jetbrains.kotlin.KtNodeTypes
-import org.jetbrains.kotlin.idea.formatter.commitAndUnblockDocument
+import org.jetbrains.kotlin.idea.codeinsight.utils.commitAndUnblockDocument
 import org.jetbrains.kotlin.idea.util.application.runWriteAction
 import org.jetbrains.kotlin.psi.KtConstantExpression
 import org.jetbrains.kotlin.psi.KtFile

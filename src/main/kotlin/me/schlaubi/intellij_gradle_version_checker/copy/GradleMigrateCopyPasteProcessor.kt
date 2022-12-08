@@ -40,9 +40,9 @@ import com.intellij.psi.util.findParentOfType
 import me.schlaubi.intellij_gradle_version_checker.dependency_format.DependencyDeclaration
 import me.schlaubi.intellij_gradle_version_checker.util.calleeFunction
 import me.schlaubi.intellij_gradle_version_checker.util.dependencyFormat
+import org.jetbrains.kotlin.idea.base.util.module
 import org.jetbrains.kotlin.idea.caches.resolve.resolveImportReference
 import org.jetbrains.kotlin.idea.util.application.runWriteAction
-import org.jetbrains.kotlin.idea.util.module
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtFile

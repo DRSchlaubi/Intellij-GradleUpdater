@@ -27,7 +27,7 @@ package me.schlaubi.intellij_gradle_version_checker.inspection.dependencies
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
 import me.schlaubi.intellij_gradle_version_checker.util.isDependencyDeclaration
-import org.jetbrains.kotlin.idea.util.module
+import org.jetbrains.kotlin.idea.base.util.module
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.plugins.gradle.settings.GradleExtensionsSettings
 

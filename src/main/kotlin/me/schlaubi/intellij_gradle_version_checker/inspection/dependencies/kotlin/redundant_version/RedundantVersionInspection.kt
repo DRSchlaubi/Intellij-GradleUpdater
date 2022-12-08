@@ -36,8 +36,8 @@ import me.schlaubi.intellij_gradle_version_checker.util.calleeFunction
 import me.schlaubi.intellij_gradle_version_checker.util.isSimple
 import me.schlaubi.intellij_gradle_version_checker.util.simpleValue
 import me.schlaubi.intellij_gradle_version_checker.util.stringValue
+import org.jetbrains.kotlin.idea.base.util.module
 import org.jetbrains.kotlin.idea.groovy.inspections.findResolvedKotlinGradleVersion
-import org.jetbrains.kotlin.idea.util.module
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtFile
 
